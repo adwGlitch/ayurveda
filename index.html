@@ -1,0 +1,4763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrakritiSense — Discover Your Ayurvedic Nature</title>
+  <meta name="description"
+    content="Discover your unique Ayurvedic mind-body constitution (Prakriti) with PrakritiSense. Rooted in 5,000 years of Ayurvedic wisdom, take our 30-question assessment and receive personalised guidance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ===== CSS VARIABLES & RESET ===== */
+    :root {
+      --forest: #1a3d2b;
+      --forest-mid: #2d5a3d;
+      --forest-light: #4a8c5c;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-pale: #f5e6b8;
+      --cream: #faf6ef;
+      --cream-dark: #f0e8d8;
+      --white: #ffffff;
+      --vata: #7b9dba;
+      --pitta: #c4704a;
+      --kapha: #5c8c6a;
+      --text-dark: #1a1a1a;
+      --text-mid: #3d3d3d;
+      --text-muted: #7a7a6a;
+      --bg: var(--cream);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(201, 168, 76, 0.2);
+      --nav-bg: rgba(250, 246, 239, 0.92);
+      --shadow: 0 4px 24px rgba(26, 61, 43, 0.08);
+      --shadow-lg: 0 12px 48px rgba(26, 61, 43, 0.14);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.dark {
+      --bg: #0f1e15;
+      --card-bg: rgba(19, 31, 24, 0.9);
+      --card-border: rgba(201, 168, 76, 0.15);
+      --nav-bg: rgba(15, 30, 21, 0.95);
+      --cream: #0f1e15;
+      --cream-dark: #131f18;
+      --text-dark: #e8e0d0;
+      --text-mid: #c8c0b0;
+      --text-muted: #8a8a7a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: 'Jost', sans-serif;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: 'Jost', sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 1.2;
+    }
+
+    .serif {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--cream-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--forest-light);
+      border-radius: 3px;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--forest);
+      cursor: pointer;
+    }
+
+    body.dark .nav-logo {
+      color: var(--gold-light);
+    }
+
+    .nav-logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a,
+    .nav-link-btn {
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text-mid);
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.2s;
+      padding: 0;
+    }
+
+    body.dark .nav-links a,
+    body.dark .nav-link-btn {
+      color: var(--text-mid);
+    }
+
+    .nav-links a:hover,
+    .nav-link-btn:hover {
+      color: var(--forest);
+    }
+
+    body.dark .nav-links a:hover,
+    body.dark .nav-link-btn:hover {
+      color: var(--gold-light);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: var(--transition);
+      color: var(--text-dark);
+    }
+
+    .btn-icon:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      color: var(--text-mid);
+      transition: var(--transition);
+    }
+
+    .lang-btn:hover {
+      border-color: var(--gold);
+      color: var(--forest);
+    }
+
+    body.dark .lang-btn:hover {
+      color: var(--gold-light);
+    }
+
+    .btn-sm {
+      padding: 8px 20px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--forest);
+      color: var(--forest);
+    }
+
+    body.dark .btn-outline {
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .btn-outline:hover {
+      background: var(--forest);
+      color: var(--white);
+    }
+
+    body.dark .btn-outline:hover {
+      background: var(--gold);
+      color: var(--forest);
+    }
+
+    .btn-filled {
+      background: var(--forest);
+      color: var(--white);
+      border: 1.5px solid var(--forest);
+    }
+
+    body.dark .btn-filled {
+      background: var(--gold);
+      color: var(--forest);
+      border-color: var(--gold);
+    }
+
+    .btn-filled:hover {
+      background: var(--forest-mid);
+    }
+
+    body.dark .btn-filled:hover {
+      background: var(--gold-light);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--forest-light), var(--forest));
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+
+    .admin-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .navbar {
+        padding: 0 1rem;
+      }
+
+      .nav-right .btn-sm {
+        display: none;
+      }
+    }
+
+    /* ===== TOAST NOTIFICATIONS ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: var(--forest);
+      color: var(--white);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      animation: slideInRight 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 320px;
+    }
+
+    .toast.error {
+      background: #c0392b;
+    }
+
+    .toast.success {
+      background: var(--forest);
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    /* ===== PAGE TRANSITIONS ===== */
+    .page-enter {
+      animation: pageIn 0.4s ease forwards;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 100px 2rem 4rem;
+      background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 60%, rgba(26, 61, 43, 0.06) 100%);
+    }
+
+    body.dark .hero {
+      background: linear-gradient(160deg, #0f1e15 0%, #0a1810 60%, #0d1f12 100%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 30px;
+      background: rgba(201, 168, 76, 0.12);
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      color: var(--gold);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.8s ease 0.1s both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      max-width: 600px;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    .btn-hero {
+      padding: 14px 32px;
+      border-radius: 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-hero-primary {
+      background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+      color: var(--white);
+      box-shadow: 0 4px 20px rgba(26, 61, 43, 0.3);
+    }
+
+    .btn-hero-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(26, 61, 43, 0.4);
+    }
+
+    body.dark .btn-hero-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.3);
+    }
+
+    .btn-hero-outline {
+      background: transparent;
+      border: 2px solid var(--forest);
+      color: var(--forest);
+    }
+
+    body.dark .btn-hero-outline {
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .btn-hero-outline:hover {
+      background: var(--forest);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    body.dark .btn-hero-outline:hover {
+      background: var(--gold);
+      color: var(--forest);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      animation: bounceDown 2s ease infinite;
+    }
+
+    @keyframes bounceDown {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(8px);
+      }
+    }
+
+    /* ===== FLOATING BOTANICALS ===== */
+    .botanical-float {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.12;
+    }
+
+    body.dark .botanical-float {
+      opacity: 0.07;
+    }
+
+    .float-1 {
+      top: 10%;
+      left: 5%;
+      animation: floatA 8s ease-in-out infinite;
+    }
+
+    .float-2 {
+      top: 20%;
+      right: 8%;
+      animation: floatB 10s ease-in-out infinite;
+    }
+
+    .float-3 {
+      bottom: 20%;
+      left: 10%;
+      animation: floatA 12s ease-in-out infinite 2s;
+    }
+
+    .float-4 {
+      bottom: 15%;
+      right: 5%;
+      animation: floatB 9s ease-in-out infinite 1s;
+    }
+
+    .float-5 {
+      top: 50%;
+      left: 2%;
+      animation: floatA 11s ease-in-out infinite 3s;
+    }
+
+    @keyframes floatA {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(8deg);
+      }
+    }
+
+    @keyframes floatB {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-15px) rotate(-6deg);
+      }
+    }
+
+    /* ===== SECTIONS ===== */
+    .section {
+      padding: 5rem 2rem;
+    }
+
+    .section-center {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 20px;
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 1.5rem auto;
+      border-radius: 2px;
+    }
+
+    /* ===== WHAT IS PRAKRITI SECTION ===== */
+    .prakriti-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .prakriti-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .prakriti-text p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-mid);
+      margin-bottom: 1.5rem;
+    }
+
+    .prakriti-ref {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 8px 12px;
+      border-left: 3px solid var(--gold);
+      background: rgba(201, 168, 76, 0.06);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .prakriti-decoration {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 400px;
+      background: radial-gradient(circle at 50% 50%, rgba(201, 168, 76, 0.08) 0%, transparent 70%);
+      border-radius: 24px;
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ===== DOSHA NAV ===== */
+    .dosha-nav {
+      position: sticky;
+      top: 64px;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .dosha-pill {
+      padding: 8px 24px;
+      border-radius: 30px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
+
+    .dosha-pill.vata {
+      color: var(--vata);
+      border-color: var(--vata);
+    }
+
+    .dosha-pill.vata:hover,
+    .dosha-pill.vata.active {
+      background: var(--vata);
+      color: white;
+    }
+
+    .dosha-pill.pitta {
+      color: var(--pitta);
+      border-color: var(--pitta);
+    }
+
+    .dosha-pill.pitta:hover,
+    .dosha-pill.pitta.active {
+      background: var(--pitta);
+      color: white;
+    }
+
+    .dosha-pill.kapha {
+      color: var(--kapha);
+      border-color: var(--kapha);
+    }
+
+    .dosha-pill.kapha:hover,
+    .dosha-pill.kapha.active {
+      background: var(--kapha);
+      color: white;
+    }
+
+    /* ===== DOSHA SECTIONS ===== */
+    .dosha-section {
+      padding: 5rem 2rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .dosha-header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3rem;
+      align-items: start;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .dosha-header {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dosha-symbol-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      flex-shrink: 0;
+    }
+
+    .dosha-symbol-circle.vata {
+      background: rgba(123, 157, 186, 0.15);
+      border: 2px solid rgba(123, 157, 186, 0.3);
+    }
+
+    .dosha-symbol-circle.pitta {
+      background: rgba(196, 112, 74, 0.15);
+      border: 2px solid rgba(196, 112, 74, 0.3);
+    }
+
+    .dosha-symbol-circle.kapha {
+      background: rgba(92, 140, 106, 0.15);
+      border: 2px solid rgba(92, 140, 106, 0.3);
+    }
+
+    .dosha-title-area h2 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .dosha-title-area h2.vata {
+      color: var(--vata);
+    }
+
+    .dosha-title-area h2.pitta {
+      color: var(--pitta);
+    }
+
+    .dosha-title-area h2.kapha {
+      color: var(--kapha);
+    }
+
+    .element-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    .element-badge.vata {
+      background: rgba(123, 157, 186, 0.15);
+      color: var(--vata);
+      border: 1px solid var(--vata);
+    }
+
+    .element-badge.pitta {
+      background: rgba(196, 112, 74, 0.15);
+      color: var(--pitta);
+      border: 1px solid var(--pitta);
+    }
+
+    .element-badge.kapha {
+      background: rgba(92, 140, 106, 0.15);
+      color: var(--kapha);
+      border: 1px solid var(--kapha);
+    }
+
+    .quality-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .quality-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+    }
+
+    .dosha-overview {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--text-mid);
+    }
+
+    .dosha-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .dosha-detail-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .dosha-detail-card h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .dosha-detail-card h4.vata {
+      color: var(--vata);
+      border-bottom: 2px solid rgba(123, 157, 186, 0.3);
+    }
+
+    .dosha-detail-card h4.pitta {
+      color: var(--pitta);
+      border-bottom: 2px solid rgba(196, 112, 74, 0.3);
+    }
+
+    .dosha-detail-card h4.kapha {
+      color: var(--kapha);
+      border-bottom: 2px solid rgba(92, 140, 106, 0.3);
+    }
+
+    .trait-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .trait-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-dark);
+      min-width: 80px;
+    }
+
+    .trait-value {
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+
+    .balance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .balance-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .balance-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .balance-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .balance-card ul {
+      list-style: none;
+    }
+
+    .balance-card ul li {
+      padding: 0.4rem 0;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+    }
+
+    .balance-card.positive ul li::before {
+      content: "✅ ";
+    }
+
+    .balance-card.warning ul li::before {
+      content: "⚠️ ";
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-it-works {
+      background: linear-gradient(135deg, rgba(26, 61, 43, 0.04) 0%, rgba(201, 168, 76, 0.04) 100%);
+    }
+
+    body.dark .how-it-works {
+      background: linear-gradient(135deg, rgba(26, 61, 43, 0.3) 0%, rgba(201, 168, 76, 0.05) 100%);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-card {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .step-number {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-card h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-dark);
+    }
+
+    .step-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ===== FAQ ===== */
+    .faq-list {
+      max-width: 720px;
+      margin: 2rem auto 0;
+    }
+
+    .faq-item {
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+    }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background: none;
+      border: none;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+      text-align: left;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: var(--forest);
+    }
+
+    body.dark .faq-question:hover {
+      color: var(--gold-light);
+    }
+
+    .faq-chevron {
+      transition: transform 0.3s;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    .faq-chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      padding: 0 1.5rem;
+    }
+
+    .faq-answer.open {
+      max-height: 300px;
+      padding: 0 1.5rem 1.25rem;
+    }
+
+    .faq-answer p {
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.8;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--forest);
+      color: rgba(255, 255, 255, 0.8);
+      padding: 3rem 2rem 1.5rem;
+    }
+
+    body.dark .footer {
+      background: #0a150e;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .footer-brand h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-brand p {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-links h4 {
+      color: var(--gold-light);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-links ul li a {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.6);
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+
+    .footer-links ul li a:hover {
+      color: var(--gold-light);
+    }
+
+    .footer-disclaimer {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ===== AUTH PAGES ===== */
+    .auth-layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 768px) {
+      .auth-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .auth-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .auth-deco {
+      background: linear-gradient(160deg, var(--forest) 0%, var(--forest-mid) 50%, #0d2a1a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+      .auth-deco {
+        display: none;
+      }
+    }
+
+    .auth-deco h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .auth-deco p {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .auth-deco-symbols {
+      display: flex;
+      gap: 1.5rem;
+      margin: 2rem 0;
+      font-size: 2.5rem;
+      opacity: 0.6;
+    }
+
+    .auth-form-box {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .auth-form-box h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+
+    .auth-form-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--forest);
+      box-shadow: 0 0 0 3px rgba(26, 61, 43, 0.1);
+    }
+
+    body.dark .form-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+    }
+
+    .form-input.error {
+      border-color: #e74c3c;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-eye {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .form-error {
+      font-size: 0.78rem;
+      color: #e74c3c;
+      margin-top: 4px;
+    }
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-check input {
+      width: auto;
+    }
+
+    .form-check label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-link {
+      font-size: 0.875rem;
+      color: var(--forest);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    body.dark .form-link {
+      color: var(--gold-light);
+    }
+
+    .form-link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 14px;
+      border-radius: 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-primary-full {
+      background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(26, 61, 43, 0.25);
+    }
+
+    body.dark .btn-primary-full {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+      box-shadow: 0 4px 16px rgba(201, 168, 76, 0.25);
+    }
+
+    .btn-primary-full:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(26, 61, 43, 0.35);
+    }
+
+    .btn-google-full {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border: 1.5px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-google-full:hover {
+      border-color: var(--gold);
+    }
+
+    .divider-or {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      position: relative;
+      margin: 1rem 0;
+    }
+
+    .divider-or::before,
+    .divider-or::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: var(--card-border);
+    }
+
+    .divider-or::before {
+      left: 0;
+    }
+
+    .divider-or::after {
+      right: 0;
+    }
+
+    .auth-switch {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 1.5rem;
+    }
+
+    .auth-switch span {
+      color: var(--forest);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    body.dark .auth-switch span {
+      color: var(--gold-light);
+    }
+
+    /* ===== PASSWORD STRENGTH ===== */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 6px;
+      transition: var(--transition);
+    }
+
+    .strength-weak {
+      background: #e74c3c;
+      width: 25%;
+    }
+
+    .strength-fair {
+      background: #f39c12;
+      width: 50%;
+    }
+
+    .strength-strong {
+      background: #27ae60;
+      width: 75%;
+    }
+
+    .strength-very-strong {
+      background: #1abc9c;
+      width: 100%;
+    }
+
+    .strength-label {
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+
+    .strength-label.weak {
+      color: #e74c3c;
+    }
+
+    .strength-label.fair {
+      color: #f39c12;
+    }
+
+    .strength-label.strong {
+      color: #27ae60;
+    }
+
+    .strength-label.very-strong {
+      color: #1abc9c;
+    }
+
+    /* ===== QUIZ PAGE ===== */
+    .quiz-page {
+      min-height: 100vh;
+      padding-top: 80px;
+      background: var(--bg);
+    }
+
+    .quiz-header {
+      padding: 2rem 2rem 0;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .quiz-progress-bar {
+      height: 6px;
+      background: var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--forest), var(--forest-light));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    body.dark .quiz-progress-fill {
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-counter {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .quiz-category-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: var(--gold);
+    }
+
+    .quiz-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 4rem;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-lg);
+      animation: questionIn 0.4s ease;
+    }
+
+    @keyframes questionIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .question-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      line-height: 1.4;
+      margin-bottom: 2rem;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .option-card {
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      border: 2px solid var(--card-border);
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+      width: 100%;
+    }
+
+    .option-card:hover {
+      border-color: var(--gold);
+      transform: translateX(4px);
+    }
+
+    .option-card.selected-vata {
+      border-color: var(--vata);
+      background: rgba(123, 157, 186, 0.1);
+      color: var(--text-dark);
+    }
+
+    .option-card.selected-pitta {
+      border-color: var(--pitta);
+      background: rgba(196, 112, 74, 0.1);
+      color: var(--text-dark);
+    }
+
+    .option-card.selected-kapha {
+      border-color: var(--kapha);
+      background: rgba(92, 140, 106, 0.1);
+      color: var(--text-dark);
+    }
+
+    .option-letter {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-right: 12px;
+      background: var(--cream-dark);
+      color: var(--text-muted);
+      flex-shrink: 0;
+      float: left;
+    }
+
+    .option-card.selected-vata .option-letter {
+      background: var(--vata);
+      color: white;
+    }
+
+    .option-card.selected-pitta .option-letter {
+      background: var(--pitta);
+      color: white;
+    }
+
+    .option-card.selected-kapha .option-letter {
+      background: var(--kapha);
+      color: white;
+    }
+
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+    }
+
+    .quiz-btn {
+      padding: 12px 32px;
+      border-radius: 32px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quiz-btn-back {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-mid);
+    }
+
+    .quiz-btn-back:hover {
+      border-color: var(--text-mid);
+    }
+
+    .quiz-btn-back:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .quiz-btn-continue {
+      background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+      color: var(--white);
+      flex: 1;
+    }
+
+    body.dark .quiz-btn-continue {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+    }
+
+    .quiz-btn-continue:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .quiz-btn-continue:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== RESULTS PAGE ===== */
+    .results-page {
+      min-height: 100vh;
+      padding-top: 80px;
+      background: var(--bg);
+    }
+
+    .results-hero {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      background: linear-gradient(160deg, rgba(26, 61, 43, 0.04) 0%, rgba(201, 168, 76, 0.06) 100%);
+    }
+
+    body.dark .results-hero {
+      background: linear-gradient(160deg, rgba(26, 61, 43, 0.2) 0%, rgba(201, 168, 76, 0.05) 100%);
+    }
+
+    .results-reveal {
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .results-prakriti-name {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--forest), var(--forest-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      animation: fadeInUp 0.8s ease 0.1s both;
+    }
+
+    body.dark .results-prakriti-name {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .results-tagline {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .results-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .results-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .results-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .chart-donut-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .chart-donut-wrapper canvas {
+      max-width: 260px;
+      max-height: 260px;
+    }
+
+    .dosha-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dosha-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dosha-bar-label {
+      width: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .dosha-bar-label.vata {
+      color: var(--vata);
+    }
+
+    .dosha-bar-label.pitta {
+      color: var(--pitta);
+    }
+
+    .dosha-bar-label.kapha {
+      color: var(--kapha);
+    }
+
+    .dosha-bar-track {
+      flex: 1;
+      height: 12px;
+      background: var(--cream-dark);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    body.dark .dosha-bar-track {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dosha-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dosha-bar-fill.vata {
+      background: linear-gradient(90deg, var(--vata), #a8c5de);
+    }
+
+    .dosha-bar-fill.pitta {
+      background: linear-gradient(90deg, var(--pitta), #d99070);
+    }
+
+    .dosha-bar-fill.kapha {
+      background: linear-gradient(90deg, var(--kapha), #7aad8a);
+    }
+
+    .dosha-bar-pct {
+      width: 40px;
+      text-align: right;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .strengths-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .strengths-card {
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .strengths-card.positive {
+      background: rgba(92, 140, 106, 0.08);
+      border: 1px solid rgba(92, 140, 106, 0.2);
+    }
+
+    .strengths-card.warning {
+      background: rgba(196, 112, 74, 0.08);
+      border: 1px solid rgba(196, 112, 74, 0.2);
+    }
+
+    .strengths-card h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .strengths-card.positive h4 {
+      color: var(--kapha);
+    }
+
+    .strengths-card.warning h4 {
+      color: var(--pitta);
+    }
+
+    .strengths-card ul {
+      list-style: none;
+    }
+
+    .strengths-card ul li {
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    /* TABS */
+    .tabs-wrapper {
+      margin-top: 0;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn:hover {
+      color: var(--forest);
+    }
+
+    body.dark .tab-btn:hover {
+      color: var(--gold-light);
+    }
+
+    .tab-btn.active {
+      color: var(--forest);
+      border-bottom-color: var(--forest);
+    }
+
+    body.dark .tab-btn.active {
+      color: var(--gold-light);
+      border-bottom-color: var(--gold);
+    }
+
+    .tab-content {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .rec-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .rec-section h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+
+    .rec-list {
+      list-style: none;
+    }
+
+    .rec-list li {
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .rec-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+    }
+
+    .rec-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .rec-two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* AI COACH */
+    .ai-coach-card {
+      background: linear-gradient(135deg, var(--forest), #0d2a1a);
+      border-radius: 20px;
+      padding: 2rem;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    body.dark .ai-coach-card {
+      background: linear-gradient(135deg, #0a1810, #0f2018);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+    }
+
+    .ai-coach-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .ai-coach-subtitle {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 1.5rem;
+    }
+
+    .ai-text {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 1rem 0;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      animation: typingPulse 1.4s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingPulse {
+
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+
+      40% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .ai-chat-area {
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+    }
+
+    .ai-chat-input-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .ai-chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--white);
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .ai-chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .ai-chat-input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .ai-send-btn {
+      padding: 12px 24px;
+      border-radius: 30px;
+      background: var(--gold);
+      color: var(--forest);
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .ai-send-btn:hover {
+      background: var(--gold-light);
+    }
+
+    .ai-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .chat-messages {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-msg {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+    }
+
+    .chat-msg.user {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+      align-self: flex-end;
+      max-width: 80%;
+    }
+
+    .chat-msg.ai {
+      background: rgba(201, 168, 76, 0.12);
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 12px 24px;
+      border-radius: 32px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action-primary {
+      background: linear-gradient(135deg, var(--forest), var(--forest-mid));
+      color: var(--white);
+    }
+
+    body.dark .btn-action-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--forest);
+    }
+
+    .btn-action-outline {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-mid);
+    }
+
+    .btn-action-outline:hover {
+      border-color: var(--forest);
+      color: var(--forest);
+    }
+
+    body.dark .btn-action-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .btn-action-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== ADMIN DASHBOARD ===== */
+    .admin-layout {
+      min-height: 100vh;
+      padding-top: 64px;
+      background: var(--bg);
+    }
+
+    .admin-nav-inner {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+    }
+
+    .admin-tab-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      background: none;
+      color: var(--text-muted);
+    }
+
+    .admin-tab-btn.active {
+      background: var(--forest);
+      color: var(--white);
+    }
+
+    body.dark .admin-tab-btn.active {
+      background: var(--gold);
+      color: var(--forest);
+    }
+
+    .admin-tab-btn:hover:not(.active) {
+      background: var(--cream-dark);
+      color: var(--text-dark);
+    }
+
+    body.dark .admin-tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .admin-content {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .stat-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .stat-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-card-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-card-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .admin-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .admin-charts {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .admin-chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .admin-chart-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .admin-chart-card canvas {
+      max-height: 250px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--card-border);
+      background: var(--cream-dark);
+      white-space: nowrap;
+    }
+
+    body.dark thead th {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      color: var(--text-mid);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    tbody tr:hover td {
+      background: rgba(201, 168, 76, 0.04);
+    }
+
+    .role-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .role-badge.admin {
+      background: rgba(201, 168, 76, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+    }
+
+    .role-badge.user {
+      background: rgba(123, 157, 186, 0.15);
+      color: var(--vata);
+      border: 1px solid rgba(123, 157, 186, 0.3);
+    }
+
+    .prakriti-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(26, 61, 43, 0.1);
+      color: var(--forest);
+      border: 1px solid rgba(26, 61, 43, 0.2);
+    }
+
+    body.dark .prakriti-badge {
+      background: rgba(201, 168, 76, 0.1);
+      color: var(--gold-light);
+      border-color: rgba(201, 168, 76, 0.2);
+    }
+
+    .btn-table-action {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-right: 4px;
+    }
+
+    .btn-view {
+      background: rgba(123, 157, 186, 0.15);
+      color: var(--vata);
+    }
+
+    .btn-view:hover {
+      background: var(--vata);
+      color: white;
+    }
+
+    .btn-promote {
+      background: rgba(201, 168, 76, 0.15);
+      color: var(--gold);
+    }
+
+    .btn-promote:hover {
+      background: var(--gold);
+      color: var(--forest);
+    }
+
+    .btn-delete {
+      background: rgba(196, 112, 74, 0.15);
+      color: var(--pitta);
+    }
+
+    .btn-delete:hover {
+      background: var(--pitta);
+      color: white;
+    }
+
+    .admin-filters {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-search {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+
+    .admin-search:focus {
+      outline: none;
+      border-color: var(--forest);
+    }
+
+    body.dark .admin-search:focus {
+      border-color: var(--gold);
+    }
+
+    .admin-select {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-dark);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .admin-section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-section-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .modal-close {
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-close:hover {
+      color: var(--text-dark);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .user-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .user-profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--forest-light), var(--forest));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border: 3px solid var(--gold);
+    }
+
+    .user-profile-info h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .user-profile-info p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .assessment-timeline {
+      margin-top: 1rem;
+    }
+
+    .assessment-entry {
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: var(--cream);
+    }
+
+    body.dark .assessment-entry {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .assessment-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .assessment-mini-bars {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .mini-bar-item {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* SETTINGS */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .settings-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .settings-toggle-row:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-switch {
+      width: 48px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--card-border);
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .toggle-switch.on {
+      background: var(--forest);
+    }
+
+    body.dark .toggle-switch.on {
+      background: var(--gold);
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      transition: var(--transition);
+    }
+
+    .toggle-switch.on .toggle-knob {
+      left: 25px;
+    }
+
+    .settings-label {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+    }
+
+    .settings-label strong {
+      display: block;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+    }
+
+    /* PROTECTED PAGE */
+    .protected-msg {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .protected-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .protected-msg h2 {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .protected-msg p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* MISC */
+    .gold-text {
+      color: var(--gold);
+    }
+
+    .forest-text {
+      color: var(--forest);
+    }
+
+    body.dark .forest-text {
+      color: var(--gold-light);
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-1 {
+      margin-top: 1rem;
+    }
+
+    .mt-2 {
+      margin-top: 2rem;
+    }
+
+    .mb-1 {
+      margin-bottom: 1rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .notice-box {
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      background: rgba(201, 168, 76, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      color: var(--text-mid);
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin-top: 1rem;
+    }
+
+    .section-alt {
+      background: linear-gradient(135deg, rgba(26, 61, 43, 0.03) 0%, rgba(201, 168, 76, 0.03) 100%);
+    }
+
+    body.dark .section-alt {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // ═══════════════════════════════════════════
+    // DATA — QUESTIONS
+    // ═══════════════════════════════════════════
+    const QUESTIONS = [
+      { id: 1, cat: "Physical · Body", q: "How would you describe your natural body frame throughout most of your life?", opts: ["Thin and light — I find it hard to gain weight and my joints and bones are often visible", "Medium and well-proportioned — moderate muscle development and stable weight", "Large and sturdy — I gain weight easily and have a solid, heavy build"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 2, cat: "Physical · Weight", q: "Your relationship with body weight has typically been:", opts: ["Underweight or very lean — gaining weight is a constant challenge", "Consistent and moderate — weight stays fairly stable with normal eating", "Tendency to be overweight — weight comes on easily and is hard to lose"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 3, cat: "Physical · Skin", q: "Your skin texture is naturally:", opts: ["Dry, rough, and thin — especially in cold or windy weather", "Warm, soft, and slightly oily — prone to redness, rashes, or acne", "Smooth, thick, cool, and moist — rarely gets very dry or irritated"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 4, cat: "Physical · Skin", q: "When you touch your own skin or others touch your hands, they feel:", opts: ["Cool or cold — my hands and feet are almost always cold", "Warm or hot — people often comment that I feel warm", "Cool and slightly moist — neither hot nor particularly cold"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 5, cat: "Physical · Hair", q: "Your natural hair texture and quality is:", opts: ["Dry, brittle, frizzy or curly — prone to split ends and breakage", "Fine, straight, silky — but oily and prone to early greying or thinning", "Thick, lustrous, wavy, and oily — strong and rarely falls out"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 6, cat: "Physical · Eyes", q: "Your eyes are naturally:", opts: ["Small, dry, dark brown or grey — active and darting in movement", "Sharp, penetrating, light coloured (green, grey, hazel) — sensitive to light", "Large, beautiful, calm — white of eye is very white, with long lashes"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 7, cat: "Physical · Teeth", q: "Your teeth and gums are:", opts: ["Irregular or large teeth — gums recede or are sensitive", "Medium-sized, slightly yellowish — gums are soft and bleed sometimes", "Large, white, strong, and well-formed — gums are firm and healthy"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 8, cat: "Physical · Nails", q: "Your nails are typically:", opts: ["Dry, brittle, rough — break or crack easily", "Soft, pink, smooth — slightly curved and flexible", "Large, thick, strong, and pale — rarely chip or break"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 9, cat: "Physical · Joints", q: "Your joints are:", opts: ["Prominent, crack often — hypermobile or feel unstable", "Moderate — average mobility, occasionally warm or inflamed", "Large, well-padded, stable — rarely crack or cause discomfort"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 10, cat: "Physical · Voice", q: "Your natural speaking voice is:", opts: ["Low, hoarse, or cracking — you speak quickly and jump between topics", "Sharp, clear, and authoritative — you speak with precision and purpose", "Deep, slow, melodious — you speak calmly and deliberately"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 11, cat: "Physiological · Digestion", q: "Your hunger and appetite is typically:", opts: ["Highly variable — very hungry one day, no appetite the next", "Strong and consistent — you get irritable, weak, or headachy if meals are skipped", "Moderate and steady — you can comfortably miss a meal without much distress"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 12, cat: "Physiological · Digestion", q: "After eating a normal meal, you typically feel:", opts: ["Gassy, bloated, or uncomfortable — digestion is unpredictable", "A warm burning sensation sometimes — occasional acid reflux or heartburn", "Heavy and slow — food takes a long time to digest, you feel full for hours"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 13, cat: "Physiological · Digestion", q: "Your bowel movement pattern is:", opts: ["Irregular and tends toward constipation — dry or hard stools", "Regular and frequent — tendency toward loose stools when stressed", "Regular but slow — heavy, well-formed stools, once a day or less"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 14, cat: "Physiological · Sleep", q: "When it comes to falling asleep:", opts: ["Difficulty falling asleep — mind races with thoughts and worries", "Fall asleep fairly easily — but may wake at 2–3 AM with active thoughts", "Fall asleep very easily — sometimes mid-activity or mid-conversation"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 15, cat: "Physiological · Sleep", q: "The quality of your sleep is:", opts: ["Light and easily disturbed — wake at small sounds, vivid or anxious dreams", "Moderate — fairly sound but sometimes hot or restless", "Deep and heavy — very hard to wake up, feel groggy in the morning"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 16, cat: "Physiological · Sleep", q: "Your body naturally needs:", opts: ["Less sleep than most — 5 to 6 hours feels sufficient", "Around 7 to 8 hours — consistent and predictable", "8 to 10 hours — feel best with long, deep sleep"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 17, cat: "Physiological · Energy", q: "Your energy levels throughout the day:", opts: ["Come in bursts — high energy then sudden fatigue, very inconsistent", "Steady and purposeful — most productive in the morning, dip in afternoon", "Slow to get going — build gradually through the day and have good endurance"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 18, cat: "Physiological · Body", q: "When it comes to sweating:", opts: ["Sweat very little even during exercise — skin stays dry", "Sweat profusely and easily — even in mild heat or light activity", "Sweat moderately with exertion — not excessive but present"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 19, cat: "Physiological · Body", q: "Your natural thirst level is:", opts: ["Variable and irregular — sometimes very thirsty, sometimes forget to drink", "High — constantly thirsty, need large amounts of water especially cold", "Low — rarely feel very thirsty, drink small amounts"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 20, cat: "Physiological · Body", q: "You feel most comfortable in:", opts: ["Warm, humid weather — cold, wind, and dry climates bother you most", "Cool, open, breezy weather — heat and humidity are very uncomfortable", "Warm, dry weather — cold and damp feel heavy and uncomfortable"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 21, cat: "Psychological · Mind", q: "When you learn something new:", opts: ["You grasp it almost instantly — but need repetition to retain it long-term", "You learn systematically and thoroughly — need to understand the why before moving on", "You take longer to understand — but once learned, it stays with you for life"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 22, cat: "Psychological · Mind", q: "Your memory works best for:", opts: ["Recent information — short-term memory is sharp but long-term is patchy", "Facts, details, and analytical information — long-term memory is excellent", "Emotional experiences and relationships — you never forget how something made you feel"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 23, cat: "Psychological · Mind", q: "Your natural concentration tends to be:", opts: ["Scattered and jumping — many ideas at once, hard to stay on one thing", "Sharp and laser-focused — excellent concentration when motivated", "Steady but slow — takes time to focus but once there, you stay"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 24, cat: "Psychological · Emotions", q: "When under significant stress, your first reaction is typically:", opts: ["Anxiety, fear, worry, or feeling overwhelmed and scattered", "Irritability, frustration, anger, or intense critical thinking", "Withdrawal, shutting down, over-eating, or becoming stubborn and unmoved"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 25, cat: "Psychological · Emotions", q: "Your dominant emotional state when life is going well is:", opts: ["Enthusiastic, joyful, spontaneous — but moods shift quickly", "Confident, passionate, and driven — you feel things with intensity", "Calm, contented, and deeply peaceful — emotionally stable and steady"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 26, cat: "Psychological · Mind", q: "When faced with an important decision:", opts: ["You decide quickly on impulse but often change your mind multiple times", "You gather information, analyse thoroughly, then commit firmly and rarely waver", "You take a long time to decide — consider all angles, but once decided, never change"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 27, cat: "Psychological · Communication", q: "Your natural way of speaking is:", opts: ["Fast, enthusiastic, and expressive — you talk a lot and jump between ideas", "Precise, articulate, and purposeful — every word is chosen carefully", "Slow, warm, and thoughtful — you speak with care and rarely rush"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 28, cat: "Behavioural · Movement", q: "Your natural walking style and physical movements are:", opts: ["Quick, light, and restless — always in motion, gestures a lot when speaking", "Purposeful, medium-paced, and confident — deliberate and controlled movements", "Slow, steady, and graceful — rarely in a hurry, movements are smooth"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 29, cat: "Behavioural · Work", q: "In work and daily activities, you:", opts: ["Start many projects with great enthusiasm but struggle to finish them all", "Work intensely and systematically — driven to complete and perfect everything", "Prefer routine and consistency — methodical, reliable, and steady in all you do"], doshas: ["vata", "pitta", "kapha"] },
+      { id: 30, cat: "Behavioural · Lifestyle", q: "Your approach to daily routine and structure:", opts: ["Irregular and variable — your routine changes constantly and spontaneously", "Disciplined and purposeful — you follow schedules to achieve your goals", "Consistent and habitual — you love your routine and find change uncomfortable"], doshas: ["vata", "pitta", "kapha"] },
+    ];
+
+    // ═══════════════════════════════════════════
+    // DATA — PRAKRITI RESULTS
+    // ═══════════════════════════════════════════
+    const PRAKRITI_DATA = {
+      "Vata": {
+        tagline: "The Creative Force of Movement & Inspiration",
+        description: "You embody the pure essence of Vata — the dynamic force of movement, creativity, and inspiration. Your quick mind, artistic nature, and boundless enthusiasm are your greatest gifts. You experience life with vivid intensity and spontaneity.",
+        strengths: ["Highly creative and imaginative", "Quick to learn and grasp new concepts", "Enthusiastic and inspiring to others", "Adaptable and flexible in changing situations", "Spiritually inclined and intuitive", "Energetic in short, powerful bursts"],
+        challenges: ["Anxiety and excessive worry", "Irregular digestion and constipation", "Difficulty maintaining routines", "Insomnia and disrupted sleep", "Tendency to become scattered", "Susceptibility to cold and dryness"],
+        diet: {
+          favor: "Warm, cooked, oily, sweet, sour, and salty foods. Nourishing and grounding.",
+          foods: "Ghee, sesame oil, warm soups, root vegetables (sweet potato, beets, carrots), rice, wheat, full-fat dairy, almonds, cashews, walnuts",
+          avoid: "Raw salads, cold drinks, dry crackers, beans (unless well-cooked), excessive caffeine, carbonated drinks",
+          timing: "Eat at regular times every day. Never skip meals. Largest meal at noon. Warm breakfast always.",
+          spices: "Ginger, cumin, coriander, cardamom, cinnamon, fennel, rock salt",
+          herbs: "Ashwagandha, Shatavari, Triphala (small dose), Brahmi, Bala"
+        },
+        yoga: {
+          style: "Gentle, grounding, warming yoga practice. Slow and intentional.",
+          best: "Hatha yoga, slow Vinyasa, Yin yoga",
+          asanas: "Child's Pose (Balasana), forward folds, standing poses for grounding (Tadasana, Virabhadrasana), gentle twists, Savasana (extended, 15–20 min)",
+          avoid: "Hot yoga, intense power yoga, erratic or jumping movements, inversions without preparation",
+          pranayama: "Nadi Shodhana (alternate nostril breathing), Bhramari (humming bee breath)",
+          frequency: "Daily, 30–45 minutes, at the same time each day for grounding routine"
+        },
+        routine: {
+          wake: "6–7 AM",
+          morning: "Warm water with lemon and ginger, oil pulling with sesame oil, self-massage with warm sesame oil (Abhyanga), gentle yoga and breathing, light meditation",
+          meals: "Three warm, regular meals at fixed times. No skipping. Largest meal at noon.",
+          evening: "Wind down by 9 PM. No screens after 9. Warm milk with nutmeg and cardamom before bed.",
+          sleep: "By 10 PM. Keep bedroom warm, cosy, and dark.",
+          avoid: "Skipping meals, staying up late, cold food and drinks, overexertion, too much travel, erratic schedules"
+        },
+        herbs: ["Ashwagandha — Builds strength, calms anxiety, improves sleep; the top herb for Vata", "Shatavari — Nourishes and deeply hydrates tissues, balances hormones", "Triphala — Regulates digestion and elimination; essential for Vata's constipation tendency", "Brahmi — Calms the racing Vata mind, improves memory and concentration", "Bala — Strengthens muscles and nerves, builds ojas (vital essence)"],
+        mind: {
+          meditation: "Grounding, breath-focused meditation. Body scan. Start with 10 minutes and build slowly.",
+          journaling: "Write thoughts before bed to empty the racing mind and prevent insomnia",
+          mantra: "\"So Hum\" (I am that) — brings stillness and presence to the scattered Vata mind",
+          avoid: "Overstimulation, too much social media, erratic schedules, excessive travel, horror movies or disturbing content",
+          care: "Warmth, routine, consistency, and deep reassurance are what Vata needs most"
+        }
+      },
+      "Pitta": {
+        tagline: "The Transformative Fire of Intelligence & Leadership",
+        description: "You carry the powerful Pitta constitution — the force of transformation, sharp intelligence, and natural leadership. Your focused mind, strong digestion, and determination allow you to achieve extraordinary things when your fire is well-directed.",
+        strengths: ["Sharp intellect and excellent analytical ability", "Natural born leader with commanding presence", "Strong, efficient digestion", "Excellent long-term memory", "Courageous, direct, and decisive", "Highly motivated and goal-oriented"],
+        challenges: ["Tendency toward anger and irritability", "Inflammation and skin issues", "Acid reflux and heartburn", "Perfectionism leading to burnout", "Impatience with others", "Overheating and excessive sweating"],
+        diet: {
+          favor: "Cool, refreshing, slightly bitter, sweet, and astringent foods. Avoid heating things.",
+          foods: "Coconut oil, ghee (in moderation), leafy greens, cucumber, sweet fruits (mango, grapes, melons), basmati rice, oats, lentils, milk, sweet potato",
+          avoid: "Spicy foods, fermented foods, fried foods, excessive salt, alcohol, coffee, tomatoes, sour citrus",
+          timing: "Never skip meals — Pitta becomes irritable with low blood sugar. Three regular meals. Largest at noon.",
+          spices: "Coriander, fennel, cardamom, mint, turmeric, coconut, lime",
+          herbs: "Shatavari, Amalaki (Amla), Brahmi, Neem, Guduchi, Licorice"
+        },
+        yoga: {
+          style: "Cooling, surrendering, and non-competitive yoga practice. Let go of striving.",
+          best: "Moon salutations, restorative yoga, cooling Vinyasa, Yin yoga",
+          asanas: "Forward folds, cooling twists, Sitali breath during practice, Legs-up-the-wall (Viparita Karani), Savasana",
+          avoid: "Hot yoga (Bikram), competitive group classes, excessive back-bending, overexertion",
+          pranayama: "Sitali (cooling breath), Sitkari, Chandra Bhedana (left-nostril breathing)",
+          frequency: "Daily, 30–45 minutes, ideally in the cooler morning hours before 10 AM"
+        },
+        routine: {
+          wake: "5:30–6:30 AM — Pitta types do best rising before heat of day",
+          morning: "Cool water with coconut and lime, self-massage with coconut oil (cooling), moderate yoga, cooling meditation",
+          meals: "Three regular cooling meals. Avoid eating when angry. Lunch is the most important meal.",
+          evening: "Wind down by 10 PM. Avoid work emails and intense discussions after dinner.",
+          sleep: "By 10–11 PM. Keep bedroom cool and well-ventilated.",
+          avoid: "Working through meals, eating when angry, competitive exercise in midday heat, alcohol, excessive ambition without rest"
+        },
+        herbs: ["Shatavari — Nourishing, cooling, and rejuvenating; reduces Pitta inflammation", "Amalaki (Amla) — The premier Pitta herb; cools the liver, improves digestion, rejuvenates", "Brahmi — Calms Pitta's intense mental activity, reduces anger and irritability", "Neem — Powerful blood purifier, cools skin inflammation and liver heat", "Guduchi — Cooling immune booster; balances Pitta without aggravating it"],
+        mind: {
+          meditation: "Loving-kindness (Metta) meditation, cooling visualization, surrender practice",
+          journaling: "Write about gratitude and what you appreciate rather than goals and achievements",
+          mantra: "\"Ram\" (divine light) or \"Shanti\" (peace) — cools the fiery Pitta mind",
+          avoid: "Competitive environments during off-time, news and conflict before bed, self-criticism, setting too many goals",
+          care: "Cooling down, letting go of control, and practicing compassion for self and others"
+        }
+      },
+      "Kapha": {
+        tagline: "The Nurturing Earth of Strength & Compassion",
+        description: "You embody the beautiful Kapha constitution — the grounding force of love, stability, and endurance. Your patient nature, deep loyalty, and incredible physical stamina are your greatest gifts. You are the rock that others lean on.",
+        strengths: ["Exceptional physical strength and stamina", "Deep, unwavering loyalty and devotion", "Naturally calm and emotionally stable", "Excellent long-term memory for experiences", "Compassionate, nurturing, and caring", "Strong immune system and excellent health"],
+        challenges: ["Weight gain and slow metabolism", "Lethargy and lack of motivation", "Depression and melancholy", "Congestion and respiratory issues", "Over-attachment and possessiveness", "Resistance to change and new experiences"],
+        diet: {
+          favor: "Light, dry, warming, spicy, bitter, and astringent foods. Stimulating to the metabolism.",
+          foods: "Light grains (barley, millet, corn), legumes, spicy vegetables, most fruits (except heavy ones), honey, warming spices, ginger tea",
+          avoid: "Heavy, oily, cold, sweet foods; dairy (especially cheese and ice cream); wheat; excess nuts; sweets and sugar",
+          timing: "Eat only two meals a day if possible. Largest at noon. Skip dinner or eat very light. Avoid late-night eating.",
+          spices: "Ginger, black pepper, turmeric, mustard seed, clove, cayenne, cinnamon, fenugreek",
+          herbs: "Trikatu (three peppers), Guggulu, Punarnava, Tulsi, Chitrak, Kutki"
+        },
+        yoga: {
+          style: "Vigorous, energizing, heating, and dynamic yoga practice. The opposite of Kapha.",
+          best: "Power yoga, strong Vinyasa, Ashtanga, hot yoga (excellent for Kapha), cardio yoga",
+          asanas: "Sun salutations (fast), standing poses, backbends (Wheel, Camel), twists, inversions, dynamic sequences",
+          avoid: "Slow, gentle, or restorative yoga too often; sleeping after yoga; very long Savasana",
+          pranayama: "Kapalabhati (skull-shining breath), Bhastrika (bellows breath), Surya Bhedana (right-nostril breathing)",
+          frequency: "Daily, 45–60 minutes minimum. Morning practice is essential for Kapha to energize the day."
+        },
+        routine: {
+          wake: "By 6 AM ideally before sunrise — sleeping past 7 AM significantly aggravates Kapha",
+          morning: "Dry body brushing (Garshana), vigorous self-massage with sesame oil, strong pranayama, vigorous exercise, light warm breakfast",
+          meals: "Two meals preferred. No snacking. Largest meal at noon. Avoid eating after 7 PM.",
+          evening: "Stay active in the evening. Social activities, light walks. Avoid napping.",
+          sleep: "By 10 PM. Keep bedroom airy and not too warm. Minimal pillows.",
+          avoid: "Sleeping during daytime, sedentary lifestyle, skipping exercise, heavy evening meals, staying in comfort zone"
+        },
+        herbs: ["Trikatu — Blend of ginger, black pepper, and pippali; the best metabolic stimulant for Kapha", "Guggulu — Powerful detoxifier that burns fat and reduces inflammation", "Punarnava — Reduces water retention and congestion; rejuvenates Kapha", "Tulsi (Holy Basil) — Opens the respiratory system, uplifts Kapha mood and energy", "Chitrak — Ignites digestive fire (Agni) which is typically weak in Kapha constitution"],
+        mind: {
+          meditation: "Energizing visualization, walking meditation, body movement meditation, loving-kindness",
+          journaling: "Write about new goals, adventures, and things you want to try to counteract Kapha inertia",
+          mantra: "\"Hum\" (fire and energy) — activates and energizes the sluggish Kapha system",
+          avoid: "Isolation, oversleeping, comfort-seeking behaviors, routine without novelty, emotional eating",
+          care: "Stimulation, novelty, new experiences, and regular social connection — these keep Kapha vibrant"
+        }
+      },
+      "Vata-Pitta": {
+        tagline: "The Creative Visionary — Movement meets Transformation",
+        description: "You are a rare blend of movement and transformation. The creative spontaneity of Vata combined with the sharp focus of Pitta makes you highly intelligent, adaptable, and driven. You have a quick mind, natural leadership abilities, and infectious enthusiasm. Your challenge is to avoid overextending yourself — the combination of Vata's scattered energy and Pitta's intensity can lead to burnout, anxiety, and inflammation if not kept in check.",
+        strengths: ["Brilliantly creative AND analytically sharp", "Quick learner with excellent retention", "Natural leader with magnetic personality", "Highly adaptable and innovative", "Passionate and enthusiastic about goals", "Able to see both big picture and detail"],
+        challenges: ["Prone to burnout from over-commitment", "Anxiety combined with irritability", "Dry skin with occasional inflammation", "Irregular digestion with acidity", "Insomnia from racing, fiery thoughts", "Impatience with self and others"],
+        diet: { favor: "Warm, moderately oily, neither too spicy nor too cold. Balance between Vata's grounding and Pitta's cooling needs.", foods: "Ghee, warm soups, sweet vegetables, basmati rice, oats, coconut, mild sweet fruits, full-fat milk", avoid: "Excessive spice, raw cold food, alcohol, caffeine, fermented foods", timing: "Three regular meals, largest at noon. Never skip. Eat in a calm environment.", spices: "Coriander, fennel, cumin, cardamom, ginger (mild), turmeric", herbs: "Shatavari, Ashwagandha (with care), Brahmi, Amalaki, Triphala" },
+        yoga: { style: "Moderate intensity — cooling for Pitta, grounding for Vata. Not too vigorous, not too gentle.", best: "Slow Vinyasa, Hatha, Yin yoga in evenings", asanas: "Grounding standing poses, forward folds, cooling twists, extended Savasana", avoid: "Hot yoga, competitive classes, erratic practice schedules", pranayama: "Nadi Shodhana (balances both), Sitali (cools Pitta)", frequency: "30–45 minutes daily, consistent schedule" },
+        routine: { wake: "6 AM", morning: "Warm water with lime, self-massage (coconut or sesame depending on season), moderate yoga, short meditation", meals: "Three warm meals, calm environment, no eating when stressed or rushed", evening: "Screen-free after 9 PM, warm milk, journal", sleep: "By 10 PM in cool but not cold room", avoid: "Overcommitting, skipping meals, spicy food when stressed, erratic schedule" },
+        herbs: ["Shatavari — Nourishes and cools, balancing both Vata dryness and Pitta heat", "Brahmi — Calms both the anxious Vata mind and the intense Pitta focus", "Amalaki (Amla) — Cooling rejuvenator that also grounds Vata", "Ashwagandha — Builds Vata strength without too much heating for Pitta", "Triphala — Regulates digestion for both Vata and Pitta imbalances"],
+        mind: { meditation: "Breath awareness with cooling visualization (like moonlight, water, breeze)", journaling: "Evening journaling to release Pitta intensity and quiet Vata anxiety", mantra: "\"So Hum\" with calm awareness", avoid: "Overwork, excessive ambition without rest, skipping meals while working", care: "Balance ambition with deep rest; creativity with structure" }
+      },
+      "Pitta-Kapha": {
+        tagline: "The Determined Achiever — Fire meets Earth",
+        description: "You carry the powerful combination of Pitta's sharp intelligence with Kapha's incredible endurance and emotional stability. You are the most physically robust of all constitutions — strong, determined, methodical, and deeply reliable. Your fire gives you the drive to achieve and your earth gives you the staying power to see it through to completion. The challenge is to prevent Pitta's inflammation from mixing with Kapha's congestion.",
+        strengths: ["Exceptional physical strength and stamina", "Sharp, methodical intelligence", "Deeply reliable and consistent", "Natural authority and leadership presence", "Emotionally stable under pressure", "Strong immune system and excellent health"],
+        challenges: ["Weight gain with inflammatory tendencies", "Stubbornness combined with anger", "Digestive issues (acidity + heaviness)", "Congestion and respiratory inflammation", "Over-attachment to success", "Difficulty with change and flexibility"],
+        diet: { favor: "Light, cooling foods that are also somewhat drying. Balance Pitta heat and Kapha heaviness.", foods: "Bitter greens, light legumes, basmati rice (less), most vegetables, sweet fruits, coconut", avoid: "Heavy oily foods, dairy, excess salt, spicy foods, alcohol, sugar, fried foods", timing: "Two to three moderate meals. Never overeat. Lunch is paramount.", spices: "Turmeric, coriander, fennel, ginger (moderate), cumin", herbs: "Guduchi, Neem, Amalaki, Trikatu (light), Punarnava" },
+        yoga: { style: "Moderate-vigorous with cooling elements. Build heat without overheating.", best: "Power yoga (morning), restorative yoga (evening balance)", asanas: "Standing poses, twists, backbends with awareness, minimal hot sequences", avoid: "Extremely hot yoga, overly competitive environments", pranayama: "Sitali (cooling), Kapalabhati (energizing Kapha)", frequency: "45–60 minutes daily" },
+        routine: { wake: "5:30–6 AM", morning: "Dry brushing, vigorous exercise, cool shower, cooling meditation", meals: "Light breakfast, substantial lunch, light dinner. Stop eating by 7 PM.", evening: "Stay active; avoid couch time after dinner", sleep: "By 10 PM, keep room cool and well-ventilated", avoid: "Sedentary behavior, heavy meals, daytime napping, alcohol" },
+        herbs: ["Guduchi — Cooling, anti-inflammatory, and immune-boosting; ideal for Pitta-Kapha", "Neem — Powerful Pitta-Kapha purifier; clears inflammation and congestion", "Amalaki — Cools Pitta without aggravating Kapha; rejuvenating", "Punarnava — Clears Kapha water retention while reducing Pitta inflammation", "Trikatu — Stimulates Kapha digestion without excessively heating Pitta"],
+        mind: { meditation: "Loving-kindness to soften Pitta control issues; energizing visualization to move Kapha", journaling: "Write about gratitude and letting go of attachment to outcomes", mantra: "\"Shanti Om\" (peace)", avoid: "Controlling behavior, emotional eating, over-attachment to results", care: "Practice surrender, flow, and accepting imperfection" }
+      },
+      "Vata-Kapha": {
+        tagline: "The Gentle Dreamer — Movement meets Stillness",
+        description: "You have the interesting combination of Vata's airy creativity and Kapha's earthy stability. This gives you a depth of imagination paired with genuine emotional warmth and caring. You can be both spontaneous and deeply loyal, both light and grounded. Your challenge is that both Vata and Kapha can create heaviness, inertia, and anxiety when out of balance — requiring a balanced approach that is warming, light, and grounding simultaneously.",
+        strengths: ["Deeply creative and warmly emotional", "Loyal, caring, and imaginative", "Adaptable yet with steady endurance", "Intuitive with a compassionate nature", "Gentle presence that people trust", "Spiritually sensitive and open"],
+        challenges: ["Anxiety combined with sluggishness", "Digestive irregularity with heaviness", "Respiratory congestion and dry skin", "Difficulty with motivation and consistency", "Tendency toward worry and withdrawal", "Cold and damp weather affects both doshas"],
+        diet: { favor: "Warm, light, slightly spicy, and grounding foods. Avoids both cold/raw and heavy/oily.", foods: "Warm soups, light grains, ginger tea, root vegetables (moderate), warming spices, small amounts of ghee", avoid: "Cold food, heavy dairy, raw food, iced drinks, excess sugar or salt", timing: "Two or three light meals. Warm breakfast always. No skipping.", spices: "Ginger, black pepper, cumin, cinnamon, cardamom, mustard seed", herbs: "Trikatu, Ashwagandha, Triphala, Tulsi, Sitopaladi" },
+        yoga: { style: "Warming and moderately vigorous with grounding elements. Consistent practice is key.", best: "Hatha yoga, moderate Vinyasa, walking, dance", asanas: "Standing poses (grounding for Vata, energizing for Kapha), warming twists, gentle backbends", avoid: "Cold or damp environments for practice, excessive stillness", pranayama: "Nadi Shodhana (balancing), Kapalabhati (energizing Kapha)", frequency: "30–45 minutes daily, same time each day" },
+        routine: { wake: "6–6:30 AM", morning: "Warm water with ginger, self-massage with warm sesame oil, moderate yoga, warming pranayama", meals: "Warm regular meals, no cold food, no skipping", evening: "Social activity or creative expression; avoid isolation", sleep: "By 10 PM", avoid: "Cold environments, irregular schedule, isolation, heavy food, daytime napping" },
+        herbs: ["Ashwagandha — Grounds Vata anxiety while gently stimulating Kapha lethargy", "Triphala — Regulates Vata digestion and gently stimulates Kapha elimination", "Trikatu — Warms and stimulates Kapha metabolism without overstimulating Vata", "Tulsi (Holy Basil) — Opens Kapha respiratory congestion and calms Vata anxiety", "Sitopaladi — Classical formula for Vata-Kapha respiratory and immune support"],
+        mind: { meditation: "Grounding body scan with energizing awareness", journaling: "Write morning intentions to overcome Kapha inertia and evening reflections to calm Vata", mantra: "\"Om\" with grounded awareness", avoid: "Isolation, sedentary days, irregular sleep, cold weather without protection", care: "Warmth, gentle stimulation, loving social connection, creative expression" }
+      },
+      "Tridoshic": {
+        tagline: "The Balanced One — A Rare Harmony of All Three Doshas",
+        description: "You are exceptionally rare — a Tridoshic constitution with all three doshas in nearly equal proportion. This is considered a highly blessed Prakriti in classical Ayurveda, as when in balance, you enjoy the best qualities of all three: Vata's creativity, Pitta's intelligence, and Kapha's strength. Your challenge, however, is that when any dosha goes out of balance (due to season, diet, or lifestyle), you can experience symptoms from any dosha and must pay close attention to seasonal variation.",
+        strengths: ["Access to the best qualities of all three doshas", "Creative, intelligent, AND strong", "Adaptable to most environments", "Generally excellent health when balanced", "Well-rounded in personality and approach", "Unique ability to understand all constitutions"],
+        challenges: ["Difficult to maintain balance in all three simultaneously", "Must adjust diet and routine seasonally", "Any imbalance can come from any direction", "Requires the most nuanced Ayurvedic care", "May identify with all dosha symptoms equally", "Need for constant self-awareness and adjustment"],
+        diet: { favor: "Seasonal eating is most important. Balance all six tastes (sweet, sour, salty, pungent, bitter, astringent) in every meal.", foods: "Fresh, seasonal, local, and varied foods. Moderate portions of everything. Ghee daily.", avoid: "Extremes of any kind — not too spicy, not too cold, not too heavy, not too light", timing: "Three regular meals. Largest at noon. Follow seasonal guidelines closely.", spices: "All spices in moderation, adjusted by season", herbs: "Triphala (year-round), Ashwagandha (winter), Shatavari (summer), Tulsi (year-round)" },
+        yoga: { style: "Vary your practice with the seasons — warming in winter, cooling in summer, grounding in fall, energizing in spring.", best: "Hatha yoga is ideal as a foundation; adjust intensity seasonally", asanas: "A balanced sequence covering standing poses, forward folds, backbends, and twists", avoid: "Extreme practices in any single direction without seasonal context", pranayama: "Nadi Shodhana as foundation; adjust others seasonally", frequency: "30–45 minutes daily, consistent practice is most important" },
+        routine: { wake: "6 AM year-round if possible", morning: "Self-massage (oil varies by season), yoga, meditation, warm breakfast", meals: "Three regular seasonal meals. Follow the six tastes principle.", evening: "Wind down gradually, screen-free hour before bed", sleep: "By 10 PM", avoid: "Extremes of any lifestyle factor; maintain moderation in all things" },
+        herbs: ["Triphala — The universal Ayurvedic formula that balances all three doshas simultaneously", "Ashwagandha — Year-round tonic for strength and stress (use more in winter)", "Shatavari — Nourishing and cooling rejuvenator (emphasize in summer)", "Tulsi — Year-round adaptogen that balances all doshas and supports immunity", "Brahmi — Cognitive enhancer and stress-reducer suitable for all doshas"],
+        mind: { meditation: "Any style works; variety keeps Tridoshic minds engaged. Rotate practices seasonally.", journaling: "Observe and track which dosha feels most prominent at different seasons", mantra: "\"Om Namah Shivaya\" (complete balance of all five elements)", avoid: "Sticking to one rigid routine year-round; ignoring seasonal changes", care: "Seasonal living (Ritucharya) is the single most important practice for Tridoshic types" }
+      }
+    };
+
+    // ═══════════════════════════════════════════
+    // TRANSLATIONS
+    // ═══════════════════════════════════════════
+    const TRANSLATIONS = {
+      en: {
+        home: "Home", about: "About", doshas: "Doshas", quiz: "Quiz",
+        login: "Login", signup: "Sign Up", logout: "Logout", adminPanel: "Admin Panel",
+        heroHeadline1: "Discover Your", heroHeadline2: "Ayurvedic Nature",
+        heroSub: "Rooted in 5,000 years of Ayurvedic wisdom, PrakritiSense helps you discover your unique mind-body constitution — your Prakriti — and gives you personalised guidance to live in harmony with your nature.",
+        beginAssessment: "Begin Assessment →", exploreDoshas: "Explore Doshas",
+        whatIsPrakriti: "What is Prakriti?",
+        howItWorks: "How It Works",
+        getStarted: "Get Started Free",
+        signIn: "Sign In", createAccount: "Create Account",
+        noAccount: "Don't have an account?", haveAccount: "Already have an account?",
+        continueGoogle: "Continue with Google",
+        backToHome: "Back to Home",
+        yourResults: "Your Prakriti is Revealed",
+      },
+      ml: {
+        home: "ഹോം", about: "ആബൗട്ട്", doshas: "ദോഷങ്ങൾ", quiz: "ക്വിസ്",
+        login: "ലോഗിൻ", signup: "സൈൻ അപ്", logout: "ലോഗൗട്ട്", adminPanel: "അഡ്മിൻ പാനൽ",
+        heroHeadline1: "നിങ്ങളുടെ", heroHeadline2: "ആയുർവേദ സ്വഭാവം കണ്ടെത്തുക",
+        heroSub: "5,000 വർഷത്തെ ആയുർവേദ ജ്ഞാനത്തിൽ വേരൂന്നിയ PrakritiSense, നിങ്ങളുടെ അദ്വിതീയ മനസ്സ്-ശരീര ഘടന — നിങ്ങളുടെ പ്രകൃതി — കണ്ടെത്താൻ സഹായിക്കുകയും നിങ്ങളുടെ സ്വഭാവത്തിന് അനുസൃതമായ ജീവിക്കാൻ വ്യക്തിഗത മാർഗനിർദ്ദേശം നൽകുകയും ചെയ്യുന്നു.",
+        beginAssessment: "മൂല്യനിർണ്ണയം ആരംഭിക്കുക →", exploreDoshas: "ദോഷങ്ങൾ പര്യവേക്ഷണം ചെയ്യുക",
+        whatIsPrakriti: "പ്രകൃതി എന്നാൽ എന്ത്?",
+        howItWorks: "ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു",
+        getStarted: "സൗജന്യമായി ആരംഭിക്കുക",
+        signIn: "സൈൻ ഇൻ", createAccount: "അക്കൗണ്ട് സൃഷ്ടിക്കുക",
+        noAccount: "അക്കൗണ്ട് ഇല്ലേ?", haveAccount: "ഇതിനകം ഒരു അക്കൗണ്ട് ഉണ്ടോ?",
+        continueGoogle: "Google ഉപയോഗിച്ച് തുടരുക",
+        backToHome: "ഹോമിലേക്ക് മടങ്ങുക",
+        yourResults: "നിങ്ങളുടെ പ്രകൃതി വെളിപ്പെടുന്നു",
+      }
+    };
+
+    // ═══════════════════════════════════════════
+    // UTILS
+    // ═══════════════════════════════════════════
+    const generateId = () => Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+
+    const getUsers = () => JSON.parse(localStorage.getItem('ps_users') || '[]');
+    const saveUsers = (u) => localStorage.setItem('ps_users', JSON.stringify(u));
+    const getCurrentUser = () => JSON.parse(localStorage.getItem('ps_current_user') || 'null');
+    const saveCurrentUser = (u) => localStorage.setItem('ps_current_user', JSON.stringify(u));
+    const clearCurrentUser = () => localStorage.removeItem('ps_current_user');
+    const getSettings = () => JSON.parse(localStorage.getItem('ps_settings') || '{"allowRegistration":true,"showQuizToAll":false}');
+    const saveSettings = (s) => localStorage.setItem('ps_settings', JSON.stringify(s));
+
+    const seedAdmin = () => {
+      const users = getUsers();
+      if (!users.find(u => u.role === 'admin')) {
+        users.push({
+          id: 'admin-001', name: 'Admin',
+          email: 'admin@prakritisense.com', password: 'admin123',
+          role: 'admin', createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(), assessments: []
+        });
+        saveUsers(users);
+      }
+    };
+
+    const computePrakriti = (scores) => {
+      const { vata, pitta, kapha } = scores;
+      const total = vata + pitta + kapha;
+      const sorted = [['vata', vata], ['pitta', pitta], ['kapha', kapha]].sort((a, b) => b[1] - a[1]);
+      const maxScore = sorted[0][1];
+      const secondScore = sorted[1][1];
+      const thirdScore = sorted[2][1];
+      if (maxScore - thirdScore <= 4) return 'Tridoshic';
+      const dominant = sorted[0][0];
+      const second = sorted[1][0];
+      if (secondScore >= 8) {
+        const pair = [dominant, second].map(d => d.charAt(0).toUpperCase() + d.slice(1));
+        return pair.join('-');
+      }
+      return dominant.charAt(0).toUpperCase() + dominant.slice(1);
+    };
+
+    const fmtDate = (iso) => {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
+    // ═══════════════════════════════════════════
+    // SVG COMPONENTS
+    // ═══════════════════════════════════════════
+    const LeafSVG = ({ size = 80, color = '#1a3d2b', opacity = 0.8 }) => (
+      <svg width={size} height={size} viewBox="0 0 100 100" fill="none" style={{ opacity }}>
+        <path d="M50 10 C20 10 10 40 15 65 C20 80 35 90 50 90 C65 90 80 80 85 65 C90 40 80 10 50 10Z" fill={color} fillOpacity="0.4" />
+        <path d="M50 10 L50 90" stroke={color} strokeWidth="1.5" opacity="0.6" />
+        <path d="M50 40 C35 35 25 50 20 60" stroke={color} strokeWidth="1" opacity="0.5" />
+        <path d="M50 40 C65 35 75 50 80 60" stroke={color} strokeWidth="1" opacity="0.5" />
+        <path d="M50 60 C38 55 30 65 28 72" stroke={color} strokeWidth="1" opacity="0.4" />
+        <path d="M50 60 C62 55 70 65 72 72" stroke={color} strokeWidth="1" opacity="0.4" />
+      </svg>
+    );
+
+    const LotusSVG = ({ size = 120, color = '#c9a84c' }) => (
+      <svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+        <ellipse cx="60" cy="75" rx="20" ry="8" fill={color} fillOpacity="0.3" />
+        <path d="M60 75 C45 60 40 40 60 30 C80 40 75 60 60 75Z" fill={color} fillOpacity="0.25" />
+        <path d="M60 75 C35 65 25 45 40 25 C55 35 58 58 60 75Z" fill={color} fillOpacity="0.2" />
+        <path d="M60 75 C85 65 95 45 80 25 C65 35 62 58 60 75Z" fill={color} fillOpacity="0.2" />
+        <path d="M60 75 C30 72 18 52 28 32 C45 40 55 60 60 75Z" fill={color} fillOpacity="0.15" />
+        <path d="M60 75 C90 72 102 52 92 32 C75 40 65 60 60 75Z" fill={color} fillOpacity="0.15" />
+        <circle cx="60" cy="68" r="8" fill={color} fillOpacity="0.4" />
+        <circle cx="60" cy="68" r="4" fill={color} fillOpacity="0.6" />
+      </svg>
+    );
+
+    // ═══════════════════════════════════════════
+    // TOAST COMPONENT
+    // ═══════════════════════════════════════════
+    const ToastContainer = ({ toasts }) => (
+      <div className="toast-container">
+        {toasts.map(t => (
+          <div key={t.id} className={`toast ${t.type}`}>
+            <span>{t.type === 'success' ? '✅' : '❌'}</span>
+            {t.msg}
+          </div>
+        ))}
+      </div>
+    );
+
+    // ═══════════════════════════════════════════
+    // NAVBAR COMPONENT
+    // ═══════════════════════════════════════════
+    const Navbar = ({ currentPage, setPage, currentUser, onLogout, darkMode, toggleDark, lang, toggleLang, t }) => {
+      const initials = currentUser ? currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : '';
+      return (
+        <nav className="navbar">
+          <div className="nav-logo" onClick={() => setPage('home')}>
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M16 4 C8 4 4 10 5 18 C6 24 10 28 16 28 C22 28 26 24 27 18 C28 10 24 4 16 4Z" fill="var(--forest-light)" fillOpacity="0.3" />
+              <path d="M16 4 C8 4 4 10 5 18 C6 24 10 28 16 28 C22 28 26 24 27 18 C28 10 24 4 16 4Z" stroke="var(--forest)" strokeWidth="1.5" />
+              <path d="M16 4 L16 28" stroke="var(--gold)" strokeWidth="1.5" />
+              <path d="M16 14 C11 12 8 16 7 20" stroke="var(--forest)" strokeWidth="1" strokeLinecap="round" />
+              <path d="M16 14 C21 12 24 16 25 20" stroke="var(--forest)" strokeWidth="1" strokeLinecap="round" />
+            </svg>
+            PrakritiSense
+          </div>
+          <ul className="nav-links">
+            <li><button className="nav-link-btn" onClick={() => setPage('home')}>{t.home}</button></li>
+            <li><button className="nav-link-btn" onClick={() => { setPage('home'); setTimeout(() => document.getElementById('prakriti-section')?.scrollIntoView({ behavior: 'smooth' }), 100) }}>{t.about}</button></li>
+            <li><button className="nav-link-btn" onClick={() => { setPage('home'); setTimeout(() => document.getElementById('dosha-section')?.scrollIntoView({ behavior: 'smooth' }), 100) }}>{t.doshas}</button></li>
+            <li><button className="nav-link-btn" onClick={() => setPage('quiz')}>{t.quiz}</button></li>
+            {currentUser?.role === 'admin' && <li><button className="nav-link-btn" onClick={() => setPage('admin')} style={{ color: 'var(--gold)' }}>{t.adminPanel}</button></li>}
+          </ul>
+          <div className="nav-right">
+            <button className="btn-icon" onClick={toggleDark} title="Toggle dark mode">{darkMode ? '☀️' : '🌙'}</button>
+            <button className="lang-btn" onClick={toggleLang}>{lang === 'en' ? 'ML' : 'EN'}</button>
+            {currentUser ? (
+              <>
+                <div className="user-avatar" title={currentUser.name}>{initials}</div>
+                {currentUser.role === 'admin' && <span className="admin-badge">Admin</span>}
+                <button className="btn-sm btn-outline" onClick={onLogout}>{t.logout}</button>
+              </>
+            ) : (
+              <>
+                <button className="btn-sm btn-outline" onClick={() => setPage('login')}>{t.login}</button>
+                <button className="btn-sm btn-filled" onClick={() => setPage('signup')}>{t.signup}</button>
+              </>
+            )}
+          </div>
+        </nav>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // HOME PAGE
+    // ═══════════════════════════════════════════
+    const HomePage = ({ setPage, t }) => {
+      const [openFaq, setOpenFaq] = useState(null);
+      const faqData = [
+        { q: "How accurate is this assessment?", a: "Our assessment is based on classical Charaka Samhita principles and covers 30 carefully designed questions across physical, physiological, psychological, and behavioural traits. While no online assessment can replace consultation with a qualified Ayurvedic vaidya, this assessment provides highly reliable results for educational and wellness purposes when answered honestly and thoughtfully." },
+        { q: "How long does it take?", a: "Most people complete the assessment in 5–8 minutes. There are 30 questions, each with three clear options. We recommend taking your time and answering based on your lifelong patterns rather than your current state." },
+        { q: "Can my Prakriti change over time?", a: "Your Prakriti (birth constitution) remains stable for life — it was established at conception. However, your Vikriti (current state of balance or imbalance) can change with seasons, diet, stress, and lifestyle. This assessment measures your Prakriti, not your Vikriti." },
+        { q: "What is a dual-dosha type?", a: "Most people have one or two dominant doshas rather than a single pure type. A dual-dosha type means two doshas are roughly equal in strength, giving you a blended constitution that combines the characteristics of both. This is actually very common — pure single-dosha types are rarer." },
+        { q: "Is this a replacement for medical advice?", a: "No. PrakritiSense is an educational wellness tool rooted in traditional Ayurvedic knowledge. It is not intended to diagnose, treat, or cure any medical condition. Please consult qualified medical and Ayurvedic practitioners for health decisions." },
+        { q: "Can I retake the quiz?", a: "Yes, absolutely. You can retake the assessment as many times as you like. All results are saved to your profile history so you can track any patterns over time. However, for the most accurate results, answer based on your consistent, lifelong patterns rather than your current health state." },
+      ];
+      return (
+        <div className="page-enter">
+          {/* HERO */}
+          <section className="hero" id="hero">
+            <div className="botanical-float float-1"><LeafSVG size={120} color="var(--forest)" opacity={0.15} /></div>
+            <div className="botanical-float float-2"><LotusSVG size={160} color="var(--gold)" /></div>
+            <div className="botanical-float float-3"><LeafSVG size={80} color="var(--forest-light)" opacity={0.12} /></div>
+            <div className="botanical-float float-4"><LeafSVG size={100} color="var(--gold)" opacity={0.1} /></div>
+            <div className="botanical-float float-5"><LotusSVG size={80} color="var(--forest)" /></div>
+            <div className="hero-badge">
+              <span>🌿</span> Ancient Wisdom · Modern Science
+            </div>
+            <h1>
+              {t.heroHeadline1}<br />
+              <em>{t.heroHeadline2}</em>
+            </h1>
+            <p className="hero-subtitle">{t.heroSub}</p>
+            <div className="hero-ctas">
+              <button className="btn-hero btn-hero-primary" onClick={() => setPage('quiz')}>{t.beginAssessment}</button>
+              <button className="btn-hero btn-hero-outline" onClick={() => document.getElementById('dosha-section')?.scrollIntoView({ behavior: 'smooth' })}>{t.exploreDoshas}</button>
+            </div>
+            <div className="scroll-indicator">
+              <span>↓</span>
+              <span style={{ fontSize: '0.65rem', letterSpacing: '0.15em' }}>SCROLL</span>
+            </div>
+          </section>
+
+          {/* WHAT IS PRAKRITI */}
+          <section className="section" id="prakriti-section">
+            <div className="container">
+              <div className="prakriti-grid">
+                <div className="prakriti-text">
+                  <div className="section-badge">🌸 Ancient Knowledge</div>
+                  <h2 className="section-title">{t.whatIsPrakriti}</h2>
+                  <div className="section-divider" style={{ margin: '1.5rem 0' }}></div>
+                  <p>Prakriti means <em>"original nature"</em> in Sanskrit. According to <strong>Charaka Samhita</strong> — the foundational Ayurvedic text — Prakriti is established at conception and remains stable throughout life. It is determined by the relative proportion of three fundamental energies called the <strong>Tridoshas</strong>: Vata, Pitta, and Kapha.</p>
+                  <p>Your Prakriti influences your body structure, digestion, sleep, emotions, learning style, immunity, and susceptibility to disease. Unlike modern medicine's one-size-fits-all approach, Ayurveda tailors diet, lifestyle, yoga, herbs, and daily routine specifically to your constitution.</p>
+                  <p>Knowing your Prakriti is the first step to living in true alignment with your nature — a path to health, happiness, and deep self-understanding.</p>
+                  <div className="prakriti-ref">Based on Charaka Samhita, Vimana Sthana, Chapter 8</div>
+                  <div className="stats-row">
+                    {[["5,000+", "Years of Wisdom"], ["7", "Prakriti Types"], ["30", "Questions"], ["~5 min", "To Complete"]].map(([n, l]) => (
+                      <div key={l} className="stat-item">
+                        <span className="stat-number">{n}</span>
+                        <span className="stat-label">{l}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="prakriti-decoration">
+                  <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🪷</div>
+                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2rem', color: 'var(--gold)', marginBottom: '0.5rem' }}>तन-मन-आत्मा</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Body · Mind · Soul</p>
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                      {[{ d: 'Vata', c: 'var(--vata)', sym: '💨' }, { d: 'Pitta', c: 'var(--pitta)', sym: '🔥' }, { d: 'Kapha', c: 'var(--kapha)', sym: '🌊' }].map(({ d, c, sym }) => (
+                        <div key={d} style={{ textAlign: 'center', padding: '1rem', borderRadius: '12px', background: `${c}18`, border: `1px solid ${c}40` }}>
+                          <div style={{ fontSize: '1.5rem' }}>{sym}</div>
+                          <div style={{ color: c, fontWeight: 700, fontSize: '0.9rem' }}>{d}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* DOSHA NAV */}
+          <div className="dosha-nav" id="dosha-section">
+            {['vata', 'pitta', 'kapha'].map(d => (
+              <button key={d} className={`dosha-pill ${d}`} onClick={() => document.getElementById(`dosha-${d}`)?.scrollIntoView({ behavior: 'smooth' })}>
+                {d.charAt(0).toUpperCase() + d.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* VATA SECTION */}
+          <section className="dosha-section" id="dosha-vata">
+            <div className="container">
+              <div className="dosha-header">
+                <div className="dosha-symbol-circle vata">💨</div>
+                <div className="dosha-title-area">
+                  <h2 className="vata">Vata Dosha</h2>
+                  <span className="element-badge vata">Air · Space</span>
+                  <div className="quality-tags">
+                    {['Dry', 'Light', 'Cold', 'Rough', 'Mobile', 'Subtle'].map(q => <span key={q} className="quality-tag">{q}</span>)}
+                  </div>
+                  <p className="dosha-overview">Vata is the dosha of movement — it governs all forms of motion in the body and mind. From the blinking of eyes to the flow of nerve impulses, from breathing to the movement of thoughts, Vata is the force behind every activity. It is the most powerful of the three doshas because neither Pitta nor Kapha can function without it. When balanced, Vata brings creativity, enthusiasm, and vitality. When disturbed, it manifests as anxiety, dryness, insomnia, and erratic digestion.</p>
+                </div>
+              </div>
+              <div className="dosha-detail-grid">
+                <div className="dosha-detail-card">
+                  <h4 className="vata">Physical Characteristics</h4>
+                  {[["Body Frame", "Thin, light, small-boned. Difficulty gaining weight. Prominent joints and visible veins."], ["Skin", "Dry, rough, cool to touch. Tends to crack in cold weather. Darker complexion."], ["Hair", "Dry, brittle, curly or frizzy. Tends toward split ends and breakage."], ["Eyes", "Small, slightly sunken, dark. Active and darting."], ["Joints", "Prominent, cracking. Hypermobile or unstable."], ["Hands & Feet", "Cold, dry. Poor circulation. Always feeling cold."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="vata">Physiological Characteristics</h4>
+                  {[["Appetite", "Highly variable — ravenous one day, no hunger the next."], ["Digestion", "Irregular. Prone to gas, bloating, and constipation."], ["Sleep", "Light, interrupted. Vivid or anxious dreams. Wakes easily."], ["Energy", "Bursts of high energy followed by fatigue. Gets tired quickly."], ["Body Temp", "Always cold. Sensitive to cold wind and drafts."], ["Sweat", "Minimal. Doesn't sweat much even during exercise."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="vata">Psychological Characteristics</h4>
+                  {[["Learning", "Grasps new information very quickly. Short-term memory is sharp."], ["Memory", "Learns fast, forgets fast. Poor long-term retention."], ["Mind", "Quick, creative, imaginative. Jumps between ideas. Scattered when imbalanced."], ["Stress", "Anxiety, fear, overwhelm, panic."], ["Emotions", "Enthusiastic, joyful when balanced. Fearful, anxious when imbalanced."], ["Decisions", "Impulsive. Changes mind frequently. Difficulty committing."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div className="balance-grid">
+                <div className="balance-card positive">
+                  <h4 style={{ color: 'var(--kapha)' }}>✅ When Balanced</h4>
+                  <ul>{["Creative & Energetic", "Joyful & Spontaneous", "Enthusiastic & Adaptable", "Quick-minded & Sharp", "Spiritually inclined", "Warm and expressive"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+                <div className="balance-card warning">
+                  <h4 style={{ color: 'var(--pitta)' }}>⚠️ When Imbalanced</h4>
+                  <ul>{["Anxiety & Insomnia", "Constipation & Dry skin", "Restlessness & Fear", "Poor concentration", "Underweight & Joint pain", "Irregular digestion"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* PITTA SECTION */}
+          <section className="dosha-section section-alt" id="dosha-pitta">
+            <div className="container">
+              <div className="dosha-header">
+                <div className="dosha-symbol-circle pitta">🔥</div>
+                <div className="dosha-title-area">
+                  <h2 className="pitta">Pitta Dosha</h2>
+                  <span className="element-badge pitta">Fire · Water</span>
+                  <div className="quality-tags">
+                    {['Hot', 'Sharp', 'Oily', 'Light', 'Spreading', 'Liquid'].map(q => <span key={q} className="quality-tag">{q}</span>)}
+                  </div>
+                  <p className="dosha-overview">Pitta is the dosha of transformation — it governs all metabolic processes, digestion, body temperature, and intelligence. Just as fire transforms raw food into nourishment, Pitta transforms raw experience into understanding. It is the force behind digestion of both food and ideas. When balanced, Pitta brings sharp intellect, confidence, courage, and leadership. When disturbed, it manifests as anger, inflammation, acidity, perfectionism, and burnout.</p>
+                </div>
+              </div>
+              <div className="dosha-detail-grid">
+                <div className="dosha-detail-card">
+                  <h4 className="pitta">Physical Characteristics</h4>
+                  {[["Body Frame", "Medium, well-proportioned. Moderate muscle development. Athletic build."], ["Skin", "Warm, oily, soft. Reddish or coppery tone. Prone to rashes, acne, freckles."], ["Hair", "Fine, silky, oily. Tendency toward early greying and hair loss."], ["Eyes", "Sharp, penetrating. Green, grey, hazel, or light brown. Sensitive to light."], ["Joints", "Moderate. Loose but stable. Warm to touch."], ["Hands & Feet", "Warm, moist. Good circulation. Often feel hot."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="pitta">Physiological Characteristics</h4>
+                  {[["Appetite", "Strong and consistent. Gets irritable or headachy if meals are skipped."], ["Digestion", "Fast and efficient. Prone to acid reflux and heartburn."], ["Sleep", "Moderate. Falls asleep easily, may wake at 2–3 AM."], ["Energy", "Steady, purposeful, and driven. Most productive in the morning."], ["Body Temp", "Warm-bodied. Overheats easily. Dislikes hot weather."], ["Sweat", "Profuse. Sweats easily, even in mild heat. Strong body odor."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="pitta">Psychological Characteristics</h4>
+                  {[["Learning", "Systematic and thorough. Needs to understand completely before moving on."], ["Memory", "Excellent long-term memory. Remembers details and facts."], ["Mind", "Sharp, analytical, logical. Goal-oriented. Excellent focus."], ["Stress", "Irritability, anger, criticism, perfectionism."], ["Emotions", "Confident, courageous when balanced. Angry, jealous when imbalanced."], ["Decisions", "Decisive. Gathers information, analyzes, then commits firmly."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div className="balance-grid">
+                <div className="balance-card positive">
+                  <h4 style={{ color: 'var(--kapha)' }}>✅ When Balanced</h4>
+                  <ul>{["Focused & Sharp intellect", "Confident & Courageous", "Warm & Inspiring leadership", "Excellent digestion & metabolism", "Great problem-solver", "Clear communication"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+                <div className="balance-card warning">
+                  <h4 style={{ color: 'var(--pitta)' }}>⚠️ When Imbalanced</h4>
+                  <ul>{["Anger & Inflammation", "Acidity & Rashes", "Burnout & Perfectionism", "Jealousy & Control issues", "Hair loss & Excessive sweating", "Liver and digestive issues"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* KAPHA SECTION */}
+          <section className="dosha-section" id="dosha-kapha">
+            <div className="container">
+              <div className="dosha-header">
+                <div className="dosha-symbol-circle kapha">🌊</div>
+                <div className="dosha-title-area">
+                  <h2 className="kapha">Kapha Dosha</h2>
+                  <span className="element-badge kapha">Earth · Water</span>
+                  <div className="quality-tags">
+                    {['Heavy', 'Slow', 'Cool', 'Oily', 'Smooth', 'Dense', 'Stable'].map(q => <span key={q} className="quality-tag">{q}</span>)}
+                  </div>
+                  <p className="dosha-overview">Kapha is the dosha of structure and stability — it provides the body with form, lubrication, endurance, and immunity. Just as earth gives plants their foundation to grow, Kapha gives the body its substance and strength. It is the dosha of love, compassion, and patience. When balanced, Kapha brings strength, stamina, emotional stability, and deep loyalty. When disturbed, it manifests as weight gain, lethargy, depression, congestion, and over-attachment.</p>
+                </div>
+              </div>
+              <div className="dosha-detail-grid">
+                <div className="dosha-detail-card">
+                  <h4 className="kapha">Physical Characteristics</h4>
+                  {[["Body Frame", "Large, sturdy, well-built. Gains weight easily, loses it with great difficulty."], ["Skin", "Smooth, cool, moist, and thick. Pale or white complexion. Ages gracefully."], ["Hair", "Thick, lustrous, wavy, oily. Strong and rarely falls out."], ["Eyes", "Large, beautiful, calm. White of eye is very white. Long eyelashes."], ["Joints", "Large, well-lubricated, stable. Rarely crack or cause problems."], ["Hands & Feet", "Large, cool, moist. Soft and well-padded."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="kapha">Physiological Characteristics</h4>
+                  {[["Appetite", "Moderate and steady. Can comfortably skip meals without distress."], ["Digestion", "Slow but steady. Prone to heaviness after eating. Low metabolic rate."], ["Sleep", "Deep, heavy, prolonged. Hard to wake up. Feels groggy in the morning."], ["Energy", "Slow to start but builds great endurance. Consistent stamina once warmed up."], ["Body Temp", "Cool-bodied. Tolerates heat well. Dislikes cold and damp."], ["Sweat", "Moderate. Sweats with exertion but not excessively."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+                <div className="dosha-detail-card">
+                  <h4 className="kapha">Psychological Characteristics</h4>
+                  {[["Learning", "Takes time to learn new things but retains information for life."], ["Memory", "Excellent long-term memory. Never forgets emotional experiences."], ["Mind", "Calm, steady, methodical. Processes slowly but thoroughly."], ["Stress", "Withdrawal, stubbornness, over-eating, clinging."], ["Emotions", "Calm, loving, compassionate when balanced. Greedy, possessive when imbalanced."], ["Decisions", "Very deliberate and slow. Rarely changes mind once decided."]].map(([l, v]) => (
+                    <div key={l} className="trait-row"><span className="trait-label">{l}</span><span className="trait-value">{v}</span></div>
+                  ))}
+                </div>
+              </div>
+              <div className="balance-grid">
+                <div className="balance-card positive">
+                  <h4 style={{ color: 'var(--kapha)' }}>✅ When Balanced</h4>
+                  <ul>{["Calm, loving & compassionate", "Physically strong & reliable", "Excellent immune system", "Patient with great endurance", "Deeply loyal to loved ones", "Emotionally stable & grounding"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+                <div className="balance-card warning">
+                  <h4 style={{ color: 'var(--pitta)' }}>⚠️ When Imbalanced</h4>
+                  <ul>{["Weight gain & Lethargy", "Depression & Congestion", "Over-attachment & Laziness", "Diabetes risk", "Respiratory issues", "Excessive sleep & inertia"].map(i => <li key={i}>{i}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* HOW IT WORKS */}
+          <section className="section how-it-works" id="how-it-works">
+            <div className="container section-center">
+              <div className="section-badge">🔮 Simple Process</div>
+              <h2 className="section-title">{t.howItWorks}</h2>
+              <div className="section-divider"></div>
+              <div className="steps-grid">
+                {[
+                  { n: 1, icon: "👤", title: "Create Account", desc: "Sign up for free in under a minute. Your account keeps your results safe and allows you to retake the assessment over time." },
+                  { n: 2, icon: "📝", title: "Answer 30 Questions", desc: "Thoughtfully answer 30 carefully designed questions covering your physical, physiological, psychological, and behavioural traits. Takes about 5 minutes." },
+                  { n: 3, icon: "🌿", title: "Get Your Prakriti", desc: "Receive your personalised Prakriti type with detailed recommendations for diet, yoga, herbs, daily routine, and mental wellness — tailored to your unique constitution." },
+                ].map(({ n, icon, title, desc }) => (
+                  <div key={n} className="step-card">
+                    <div className="step-number">{n}</div>
+                    <div className="step-icon">{icon}</div>
+                    <h3>{title}</h3>
+                    <p>{desc}</p>
+                  </div>
+                ))}
+              </div>
+              <button className="btn-hero btn-hero-primary" style={{ marginTop: '3rem' }} onClick={() => setPage('signup')}>
+                {t.getStarted}
+              </button>
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section className="section" id="faq">
+            <div className="container section-center">
+              <div className="section-badge">❓ Common Questions</div>
+              <h2 className="section-title">Frequently Asked Questions</h2>
+              <div className="section-divider"></div>
+              <div className="faq-list">
+                {faqData.map((item, i) => (
+                  <div key={i} className="faq-item">
+                    <button className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                      {item.q}
+                      <span className={`faq-chevron${openFaq === i ? ' open' : ''}`}>▾</span>
+                    </button>
+                    <div className={`faq-answer${openFaq === i ? ' open' : ''}`}>
+                      <p>{item.a}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* FOOTER */}
+          <footer className="footer">
+            <div className="container">
+              <div className="footer-grid">
+                <div className="footer-brand">
+                  <h3>🌿 PrakritiSense</h3>
+                  <p>Discover your unique Ayurvedic constitution and receive personalised guidance rooted in 5,000 years of ancient wisdom. Live in harmony with your true nature.</p>
+                </div>
+                <div className="footer-links">
+                  <h4>Explore</h4>
+                  <ul>
+                    <li><a onClick={() => setPage('home')}>Home</a></li>
+                    <li><a onClick={() => document.getElementById('prakriti-section')?.scrollIntoView({ behavior: 'smooth' })}>About Prakriti</a></li>
+                    <li><a onClick={() => document.getElementById('dosha-section')?.scrollIntoView({ behavior: 'smooth' })}>The Three Doshas</a></li>
+                    <li><a onClick={() => setPage('quiz')}>Take the Quiz</a></li>
+                  </ul>
+                </div>
+                <div className="footer-links">
+                  <h4>Account</h4>
+                  <ul>
+                    <li><a onClick={() => setPage('login')}>Login</a></li>
+                    <li><a onClick={() => setPage('signup')}>Sign Up</a></li>
+                    <li><a onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}>FAQ</a></li>
+                  </ul>
+                </div>
+              </div>
+              <p className="footer-disclaimer">⚠️ PrakritiSense is an educational wellness tool based on traditional Ayurvedic knowledge. It is not intended to diagnose, treat, cure, or prevent any medical condition. Results should not replace consultation with qualified medical professionals or Ayurvedic practitioners.</p>
+              <div className="footer-bottom">© 2026 PrakritiSense. All rights reserved. Built with ancient wisdom &amp; modern technology.</div>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // LOGIN PAGE
+    // ═══════════════════════════════════════════
+    const LoginPage = ({ setPage, onLogin, addToast, t }) => {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [showPw, setShowPw] = useState(false);
+      const [remember, setRemember] = useState(false);
+      const [errors, setErrors] = useState({});
+      const [loading, setLoading] = useState(false);
+
+      const validate = () => {
+        const e = {};
+        if (!email) e.email = 'Email is required';
+        else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Please enter a valid email';
+        if (!password) e.password = 'Password is required';
+        return e;
+      };
+
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        const errs = validate();
+        if (Object.keys(errs).length) { setErrors(errs); return; }
+        setLoading(true);
+        await new Promise(r => setTimeout(r, 800));
+        const users = getUsers();
+        const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+        if (!user) {
+          setErrors({ form: 'Invalid email or password. Please try again.' });
+          setLoading(false); return;
+        }
+        const updatedUser = { ...user, lastLogin: new Date().toISOString() };
+        const updated = users.map(u => u.id === user.id ? updatedUser : u);
+        saveUsers(updated);
+        saveCurrentUser(updatedUser);
+        onLogin(updatedUser);
+        addToast(`Welcome back, ${user.name}!`, 'success');
+        setPage('quiz');
+        setLoading(false);
+      };
+
+      const handleGoogle = () => {
+        addToast('Google Sign-In is simulated in this demo.', 'success');
+      };
+
+      return (
+        <div className="auth-layout page-enter" style={{ paddingTop: '64px' }}>
+          <div className="auth-deco">
+            <div style={{ position: 'absolute', top: '10%', right: '10%', opacity: 0.2 }}><LotusSVG size={200} color="var(--gold)" /></div>
+            <div style={{ position: 'absolute', bottom: '10%', left: '5%', opacity: 0.15 }}><LeafSVG size={180} color="white" /></div>
+            <h2>Welcome Back</h2>
+            <div className="auth-deco-symbols">💨🔥🌊</div>
+            <p>Your Prakriti journey awaits. Sign in to access your personalised Ayurvedic assessment and wellness recommendations.</p>
+            <div style={{ marginTop: '2rem', padding: '1.5rem', borderRadius: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.5rem' }}>DEMO ADMIN ACCESS</p>
+              <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>📧 admin@prakritisense.com</p>
+              <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>🔑 admin123</p>
+            </div>
+          </div>
+          <div className="auth-panel" style={{ background: 'var(--bg)' }}>
+            <div className="auth-form-box">
+              <h2>{t.signIn}</h2>
+              <p>Access your Prakriti assessment and personalised wellness guidance</p>
+              <form onSubmit={handleLogin}>
+                {errors.form && <div style={{ padding: '12px', background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', borderRadius: '8px', color: '#e74c3c', fontSize: '0.875rem', marginBottom: '1rem' }}>{errors.form}</div>}
+                <div className="form-group">
+                  <label className="form-label">Email address</label>
+                  <input className={`form-input${errors.email ? ' error' : ''}`} type="email" placeholder="you@example.com" value={email} onChange={e => { setEmail(e.target.value); setErrors({}) }} />
+                  {errors.email && <div className="form-error">{errors.email}</div>}
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <div className="input-wrapper">
+                    <input className={`form-input${errors.password ? ' error' : ''}`} type={showPw ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => { setPassword(e.target.value); setErrors({}) }} style={{ paddingRight: '40px' }} />
+                    <button type="button" className="input-eye" onClick={() => setShowPw(!showPw)}>{showPw ? '🙈' : '👁️'}</button>
+                  </div>
+                  {errors.password && <div className="form-error">{errors.password}</div>}
+                </div>
+                <div className="form-row" style={{ marginBottom: '1.5rem' }}>
+                  <div className="form-check">
+                    <input type="checkbox" id="remember" checked={remember} onChange={e => setRemember(e.target.checked)} />
+                    <label htmlFor="remember">Remember me</label>
+                  </div>
+                  <span className="form-link" onClick={() => addToast('Password reset is not available in demo mode.', 'success')}>Forgot password?</span>
+                </div>
+                <button type="submit" className="btn-full btn-primary-full" disabled={loading}>
+                  {loading ? <span className="loading-spinner"></span> : `${t.signIn} →`}
+                </button>
+              </form>
+              <div className="divider-or">or</div>
+              <button className="btn-full btn-google-full" onClick={handleGoogle}>
+                <span>🔵</span> {t.continueGoogle}
+              </button>
+              <div className="auth-switch">{t.noAccount} <span onClick={() => setPage('signup')}>{t.signup}</span></div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // SIGNUP PAGE
+    // ═══════════════════════════════════════════
+    const SignupPage = ({ setPage, onLogin, addToast, t }) => {
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [confirm, setConfirm] = useState('');
+      const [showPw, setShowPw] = useState(false);
+      const [errors, setErrors] = useState({});
+      const [loading, setLoading] = useState(false);
+
+      const getStrength = (pw) => {
+        if (!pw) return null;
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+        if (score === 1) return { label: 'Weak', cls: 'weak' };
+        if (score === 2) return { label: 'Fair', cls: 'fair' };
+        if (score === 3) return { label: 'Strong', cls: 'strong' };
+        return { label: 'Very Strong', cls: 'very-strong' };
+      };
+      const strength = getStrength(password);
+
+      const validate = () => {
+        const e = {};
+        if (!name.trim()) e.name = 'Full name is required';
+        if (!email) e.email = 'Email is required';
+        else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Please enter a valid email';
+        if (!password) e.password = 'Password is required';
+        else if (password.length < 6) e.password = 'Password must be at least 6 characters';
+        if (password !== confirm) e.confirm = 'Passwords do not match';
+        return e;
+      };
+
+      const handleSignup = async (e) => {
+        e.preventDefault();
+        const errs = validate();
+        if (Object.keys(errs).length) { setErrors(errs); return; }
+        setLoading(true);
+        await new Promise(r => setTimeout(r, 800));
+        const users = getUsers();
+        if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+          setErrors({ email: 'An account with this email already exists.' });
+          setLoading(false); return;
+        }
+        const settings = getSettings();
+        if (!settings.allowRegistration) {
+          addToast('New registrations are currently disabled.', 'error');
+          setLoading(false); return;
+        }
+        const newUser = {
+          id: generateId(), name: name.trim(), email: email.toLowerCase(),
+          password, role: 'user',
+          createdAt: new Date().toISOString(), lastLogin: new Date().toISOString(),
+          assessments: []
+        };
+        users.push(newUser);
+        saveUsers(users);
+        saveCurrentUser(newUser);
+        onLogin(newUser);
+        addToast(`Welcome to PrakritiSense, ${name}! 🌿`, 'success');
+        setPage('quiz');
+        setLoading(false);
+      };
+
+      return (
+        <div className="auth-layout page-enter" style={{ paddingTop: '64px' }}>
+          <div className="auth-deco">
+            <div style={{ position: 'absolute', top: '5%', left: '5%', opacity: 0.15 }}><LeafSVG size={200} color="white" /></div>
+            <div style={{ position: 'absolute', bottom: '10%', right: '5%', opacity: 0.2 }}><LotusSVG size={180} color="var(--gold)" /></div>
+            <h2>Begin Your Journey</h2>
+            <div className="auth-deco-symbols">🌿🪷✨</div>
+            <p>Join thousands who have discovered their Prakriti and transformed their health and wellbeing with personalised Ayurvedic wisdom.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '2rem' }}>
+              {["✅ Free forever", "✅ 30-question assessment", "✅ Personalised recommendations", "✅ AI Wellness Coach", "✅ Secure and private"].map(i => (
+                <div key={i} style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>{i}</div>
+              ))}
+            </div>
+          </div>
+          <div className="auth-panel" style={{ background: 'var(--bg)' }}>
+            <div className="auth-form-box">
+              <h2>{t.createAccount}</h2>
+              <p>Start your Ayurvedic wellness journey today — completely free</p>
+              <form onSubmit={handleSignup}>
+                <div className="form-group">
+                  <label className="form-label">Full Name</label>
+                  <input className={`form-input${errors.name ? ' error' : ''}`} type="text" placeholder="Your full name" value={name} onChange={e => { setName(e.target.value); setErrors({}) }} />
+                  {errors.name && <div className="form-error">{errors.name}</div>}
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email Address</label>
+                  <input className={`form-input${errors.email ? ' error' : ''}`} type="email" placeholder="you@example.com" value={email} onChange={e => { setEmail(e.target.value); setErrors({}) }} />
+                  {errors.email && <div className="form-error">{errors.email}</div>}
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <div className="input-wrapper">
+                    <input className={`form-input${errors.password ? ' error' : ''}`} type={showPw ? 'text' : 'password'} placeholder="Create a strong password" value={password} onChange={e => { setPassword(e.target.value); setErrors({}) }} style={{ paddingRight: '40px' }} />
+                    <button type="button" className="input-eye" onClick={() => setShowPw(!showPw)}>{showPw ? '🙈' : '👁️'}</button>
+                  </div>
+                  {password && strength && (
+                    <>
+                      <div className={`strength-bar strength-${strength.cls}`}></div>
+                      <div className={`strength-label ${strength.cls}`}>{strength.label}</div>
+                    </>
+                  )}
+                  {errors.password && <div className="form-error">{errors.password}</div>}
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Confirm Password</label>
+                  <input className={`form-input${errors.confirm ? ' error' : ''}`} type="password" placeholder="Confirm your password" value={confirm} onChange={e => { setConfirm(e.target.value); setErrors({}) }} />
+                  {errors.confirm && <div className="form-error">{errors.confirm}</div>}
+                </div>
+                <button type="submit" className="btn-full btn-primary-full" disabled={loading} style={{ marginTop: '0.5rem' }}>
+                  {loading ? <span className="loading-spinner"></span> : `${t.createAccount} →`}
+                </button>
+              </form>
+              <div className="divider-or">or</div>
+              <button className="btn-full btn-google-full" onClick={() => addToast('Google Sign-Up is simulated in this demo.', 'success')}>
+                <span>🔵</span> {t.continueGoogle}
+              </button>
+              <div className="auth-switch">{t.haveAccount} <span onClick={() => setPage('login')}>{t.signIn}</span></div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // RESULTS PAGE
+    // ═══════════════════════════════════════════
+    const ResultsPage = ({ result, setPage, currentUser, addToast, setCurrentUser }) => {
+      const [activeTab, setActiveTab] = useState('diet');
+      const [aiText, setAiText] = useState('');
+      const [aiLoading, setAiLoading] = useState(true);
+      const [chatInput, setChatInput] = useState('');
+      const [chatLoading, setChatLoading] = useState(false);
+      const [chatMessages, setChatMessages] = useState([]);
+      const [barsAnimated, setBarsAnimated] = useState(false);
+      const chartRef = useRef(null);
+      const chartInstance = useRef(null);
+
+      const data = PRAKRITI_DATA[result.prakriti] || PRAKRITI_DATA['Vata'];
+      const { vata, pitta, kapha } = result.percentages;
+
+      useEffect(() => {
+        setTimeout(() => setBarsAnimated(true), 300);
+        initChart();
+        fetchAIExplanation();
+        return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+      }, []);
+
+      const initChart = () => {
+        if (!chartRef.current) return;
+        if (chartInstance.current) chartInstance.current.destroy();
+        chartInstance.current = new Chart(chartRef.current, {
+          type: 'doughnut',
+          data: {
+            labels: ['Vata', 'Pitta', 'Kapha'],
+            datasets: [{
+              data: [vata, pitta, kapha],
+              backgroundColor: ['rgba(123,157,186,0.85)', 'rgba(196,112,74,0.85)', 'rgba(92,140,106,0.85)'],
+              borderColor: ['#7b9dba', '#c4704a', '#5c8c6a'],
+              borderWidth: 2,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: true,
+            cutout: '68%',
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+            },
+            animation: { duration: 1200, easing: 'easeInOutQuart' }
+          }
+        });
+      };
+
+      const fetchAIExplanation = async () => {
+        setAiLoading(true);
+        try {
+          const prompt = `The user's Prakriti assessment results are: ${result.prakriti}, Vata ${vata}%, Pitta ${pitta}%, Kapha ${kapha}%. Write a warm, personal 3-4 sentence explanation of what this means for them — their natural strengths, one key challenge, and the single most important Ayurvedic tip for their balance. Be specific to their exact dosha combination. Do not use bullet points.`;
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system: "You are an expert Ayurvedic wellness counselor with deep knowledge of Charaka Samhita. Speak warmly, personally, and in simple language.",
+              prompt
+            })
+          });
+          if (!response.ok) throw new Error('API error');
+          const d = await response.json();
+          setAiText(d.response || d.content || d.text || '');
+        } catch {
+          setAiText(`As a ${result.prakriti} type, you carry a unique constitutional blueprint shaped by the elements that define you. Your natural strengths flow from this core energy, and with the right Ayurvedic approach, you can bring your doshas into their most harmonious expression. The key for you is consistency in your daily routine (Dinacharya) — small, steady daily practices will create lasting balance far more effectively than occasional intensive efforts.`);
+        }
+        setAiLoading(false);
+      };
+
+      const sendChat = async () => {
+        if (!chatInput.trim() || chatLoading) return;
+        const question = chatInput.trim();
+        setChatMessages(m => [...m, { role: 'user', text: question }]);
+        setChatInput('');
+        setChatLoading(true);
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system: "You are an expert Ayurvedic wellness counselor with deep knowledge of Charaka Samhita. Speak warmly, personally, and in simple language.",
+              prompt: `The user's Prakriti is ${result.prakriti} (Vata ${vata}%, Pitta ${pitta}%, Kapha ${kapha}%). They ask: "${question}". Give a warm, practical, specific answer in 2-4 sentences tailored exactly to their constitution.`
+            })
+          });
+          if (!response.ok) throw new Error();
+          const d = await response.json();
+          setChatMessages(m => [...m, { role: 'ai', text: d.response || d.content || d.text || '' }]);
+        } catch {
+          setChatMessages(m => [...m, { role: 'ai', text: `For a ${result.prakriti} type, this is a great question! I'd recommend exploring the detailed recommendations in the tabs above, particularly the Diet and Daily Routine sections, as they are specifically tailored to your constitution.` }]);
+        }
+        setChatLoading(false);
+      };
+
+      const downloadReport = () => {
+        const rpt = `
+PrakritiSense — Your Ayurvedic Assessment Report
+Generated: ${new Date().toLocaleDateString('en-IN')}
+═══════════════════════════════════
+
+YOUR PRAKRITI: ${result.prakriti}
+${data.tagline}
+
+DOSHA COMPOSITION:
+• Vata: ${vata}%
+• Pitta: ${pitta}%
+• Kapha: ${kapha}%
+
+DESCRIPTION:
+${data.description}
+
+NATURAL STRENGTHS:
+${data.strengths.map(s => `• ${s}`).join('\n')}
+
+CHALLENGES TO WATCH:
+${data.challenges.map(c => `• ${c}`).join('\n')}
+
+DIETARY RECOMMENDATIONS:
+• Favour: ${data.diet.favor}
+• Best foods: ${data.diet.foods}
+• Avoid: ${data.diet.avoid}
+• Timing: ${data.diet.timing}
+• Spices: ${data.diet.spices}
+• Herbs: ${data.diet.herbs}
+
+YOGA RECOMMENDATIONS:
+• Style: ${data.yoga.style}
+• Best: ${data.yoga.best}
+• Pranayama: ${data.yoga.pranayama}
+• Frequency: ${data.yoga.frequency}
+
+DAILY ROUTINE:
+• Wake: ${data.routine.wake}
+• Morning: ${data.routine.morning}
+• Meals: ${data.routine.meals}
+• Evening: ${data.routine.evening}
+• Sleep: ${data.routine.sleep}
+• Avoid: ${data.routine.avoid}
+
+HERBS:
+${data.herbs.map(h => `• ${h}`).join('\n')}
+
+MIND & EMOTIONS:
+• Meditation: ${data.mind.meditation}
+• Journaling: ${data.mind.journaling}
+• Mantra: ${data.mind.mantra}
+• Emotional care: ${data.mind.care}
+
+═══════════════════════════════════
+Disclaimer: This report is for educational purposes based on traditional Ayurvedic knowledge. 
+Not a substitute for medical advice. Consult qualified practitioners for health decisions.
+© 2026 PrakritiSense
+    `.trim();
+        const blob = new Blob([rpt], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = `PrakritiSense_Report_${result.prakriti.replace('-', '_')}.txt`;
+        a.click(); URL.revokeObjectURL(url);
+        addToast('Report downloaded!', 'success');
+      };
+
+      const tabs = [
+        { id: 'diet', label: '🌾 Diet' },
+        { id: 'yoga', label: '🧘 Yoga' },
+        { id: 'routine', label: '🌅 Daily Routine' },
+        { id: 'herbs', label: '🌿 Herbs' },
+        { id: 'mind', label: '🧠 Mind' }
+      ];
+
+      const renderTab = () => {
+        const d = data;
+        switch (activeTab) {
+          case 'diet': return (
+            <div className="tab-content">
+              <div className="rec-two-col">
+                <div>
+                  <div className="rec-section"><h4>✅ Favour</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.favor}</p></div>
+                  <div className="rec-section"><h4>Best Foods</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.foods}</p></div>
+                  <div className="rec-section"><h4>Healing Spices</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.spices}</p></div>
+                </div>
+                <div>
+                  <div className="rec-section"><h4>❌ Avoid</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.avoid}</p></div>
+                  <div className="rec-section"><h4>Meal Timing</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.timing}</p></div>
+                  <div className="rec-section"><h4>Recommended Herbs</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.diet.herbs}</p></div>
+                </div>
+              </div>
+            </div>
+          );
+          case 'yoga': return (
+            <div className="tab-content">
+              <div className="rec-two-col">
+                <div>
+                  <div className="rec-section"><h4>Practice Style</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.style}</p></div>
+                  <div className="rec-section"><h4>Best Practices</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.best}</p></div>
+                  <div className="rec-section"><h4>Asanas</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.asanas}</p></div>
+                </div>
+                <div>
+                  <div className="rec-section"><h4>❌ Avoid</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.avoid}</p></div>
+                  <div className="rec-section"><h4>Pranayama</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.pranayama}</p></div>
+                  <div className="rec-section"><h4>Frequency</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.yoga.frequency}</p></div>
+                </div>
+              </div>
+            </div>
+          );
+          case 'routine': return (
+            <div className="tab-content">
+              <div className="rec-two-col">
+                <div>
+                  <div className="rec-section"><h4>Wake Time</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.wake}</p></div>
+                  <div className="rec-section"><h4>Morning Routine</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.morning}</p></div>
+                  <div className="rec-section"><h4>Meals</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.meals}</p></div>
+                </div>
+                <div>
+                  <div className="rec-section"><h4>Evening Routine</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.evening}</p></div>
+                  <div className="rec-section"><h4>Sleep</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.sleep}</p></div>
+                  <div className="rec-section"><h4>❌ Avoid</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.routine.avoid}</p></div>
+                </div>
+              </div>
+            </div>
+          );
+          case 'herbs': return (
+            <div className="tab-content">
+              <ul className="rec-list">
+                {d.herbs.map((h, i) => <li key={i} style={{ padding: '0.6rem 0 0.6rem 1.5rem', borderBottom: '1px solid var(--card-border)', fontSize: '0.9rem' }}>{h}</li>)}
+              </ul>
+              <div className="notice-box" style={{ marginTop: '1.5rem' }}>
+                🌿 Always consult a qualified Ayurvedic practitioner before starting herbal supplements, especially if you have existing medical conditions or take medications.
+              </div>
+            </div>
+          );
+          case 'mind': return (
+            <div className="tab-content">
+              <div className="rec-two-col">
+                <div>
+                  <div className="rec-section"><h4>Meditation</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.mind.meditation}</p></div>
+                  <div className="rec-section"><h4>Journaling</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.mind.journaling}</p></div>
+                </div>
+                <div>
+                  <div className="rec-section"><h4>Mantra Practice</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.mind.mantra}</p></div>
+                  <div className="rec-section"><h4>❌ Avoid</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.mind.avoid}</p></div>
+                  <div className="rec-section"><h4>Emotional Care</h4><p style={{ fontSize: '0.9rem', color: 'var(--text-mid)', lineHeight: 1.7 }}>{d.mind.care}</p></div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+      };
+
+      return (
+        <div className="results-page page-enter">
+          <div className="results-hero">
+            <div className="results-reveal">✨ Your Prakriti is Revealed</div>
+            <h1 className="results-prakriti-name">{result.prakriti}</h1>
+            <p className="results-tagline">{data.tagline}</p>
+          </div>
+          <div className="results-container">
+            {/* DOSHA COMPOSITION */}
+            <div className="results-section">
+              <div className="results-section-title">Your Dosha Composition</div>
+              <div className="chart-donut-wrapper">
+                <canvas ref={chartRef} width="260" height="260"></canvas>
+              </div>
+              <div className="dosha-bars">
+                {[['vata', 'Vata', vata], ['pitta', 'Pitta', pitta], ['kapha', 'Kapha', kapha]].map(([key, label, pct]) => (
+                  <div key={key} className="dosha-bar-row">
+                    <span className={`dosha-bar-label ${key}`}>{label}</span>
+                    <div className="dosha-bar-track">
+                      <div className={`dosha-bar-fill ${key}`} style={{ width: barsAnimated ? `${pct}%` : '0%' }}></div>
+                    </div>
+                    <span className="dosha-bar-pct">{pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* EXPLANATION */}
+            <div className="results-section">
+              <div className="results-section-title">Your {result.prakriti} Constitution</div>
+              <p style={{ fontSize: '1rem', lineHeight: 1.9, color: 'var(--text-mid)' }}>{data.description}</p>
+            </div>
+
+            {/* STRENGTHS */}
+            <div className="results-section">
+              <div className="results-section-title">Strengths & Challenges</div>
+              <div className="strengths-grid">
+                <div className="strengths-card positive">
+                  <h4>✅ Natural Strengths</h4>
+                  <ul>{data.strengths.map(s => <li key={s}><span style={{ color: 'var(--kapha)' }}>✓</span> {s}</li>)}</ul>
+                </div>
+                <div className="strengths-card warning">
+                  <h4>⚠️ Watch Out For</h4>
+                  <ul>{data.challenges.map(c => <li key={c}><span style={{ color: 'var(--pitta)' }}>!</span> {c}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+
+            {/* RECOMMENDATIONS TABS */}
+            <div className="results-section">
+              <div className="results-section-title">Personalised Recommendations</div>
+              <div className="tabs-wrapper">
+                <div className="tabs-nav">
+                  {tabs.map(tab => (
+                    <button key={tab.id} className={`tab-btn${activeTab === tab.id ? ' active' : ''}`} onClick={() => setActiveTab(tab.id)}>
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                {renderTab()}
+              </div>
+            </div>
+
+            {/* AI COACH */}
+            <div className="ai-coach-card">
+              <div className="ai-coach-title">🌿 Your Personal Ayurvedic Advisor</div>
+              <div className="ai-coach-subtitle">Powered by Claude AI · Personalised to your {result.prakriti} constitution</div>
+              {aiLoading ? (
+                <div className="typing-indicator">
+                  <div className="typing-dot"></div><div className="typing-dot"></div><div className="typing-dot"></div>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginLeft: '8px' }}>Generating your personalised insight...</span>
+                </div>
+              ) : <p className="ai-text">{aiText}</p>}
+              <div className="ai-chat-area">
+                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', marginBottom: '1rem' }}>Ask me anything about your Prakriti and Ayurvedic wellness:</p>
+                <div className="chat-messages">
+                  {chatMessages.map((m, i) => (
+                    <div key={i} className={`chat-msg ${m.role}`}>{m.text}</div>
+                  ))}
+                  {chatLoading && (
+                    <div className="chat-msg ai">
+                      <div className="typing-indicator" style={{ padding: 0 }}>
+                        <div className="typing-dot"></div><div className="typing-dot"></div><div className="typing-dot"></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="ai-chat-input-row" style={{ marginTop: '1rem' }}>
+                  <input
+                    className="ai-chat-input" placeholder={`Ask about your ${result.prakriti} Prakriti...`}
+                    value={chatInput} onChange={e => setChatInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && sendChat()}
+                  />
+                  <button className="ai-send-btn" onClick={sendChat} disabled={chatLoading || !chatInput.trim()}>
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="action-buttons">
+              <button className="btn-action btn-action-primary" onClick={downloadReport}>📥 Download Report</button>
+              <button className="btn-action btn-action-outline" onClick={() => setPage('quiz')}>🔁 Retake Assessment</button>
+              <button className="btn-action btn-action-outline" style={{ color: 'var(--kapha)', borderColor: 'var(--kapha)' }}>💾 Saved to Profile</button>
+              <button className="btn-action btn-action-outline" onClick={() => setPage('home')}>🏠 Back to Home</button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // QUIZ PAGE
+    // ═══════════════════════════════════════════
+    const QuizPage = ({ currentUser, setPage, addToast, onResultSave }) => {
+      const [current, setCurrent] = useState(0);
+      const [answers, setAnswers] = useState(Array(30).fill(null));
+      const [result, setResult] = useState(null);
+      const [key, setKey] = useState(0);
+
+      if (!currentUser) {
+        return (
+          <div className="quiz-page">
+            <div className="protected-msg">
+              <div className="protected-icon">🔒</div>
+              <h2>Assessment Protected</h2>
+              <p>Please create an account or log in to take the Prakriti assessment and save your results.</p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button className="btn-action btn-action-primary" onClick={() => setPage('login')}>Login</button>
+                <button className="btn-action btn-action-outline" onClick={() => setPage('signup')}>Sign Up Free</button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (result) {
+        return <ResultsPage result={result} setPage={setPage} currentUser={currentUser} addToast={addToast} />;
+      }
+
+      const q = QUESTIONS[current];
+      const selected = answers[current];
+      const progress = ((current + (selected !== null ? 1 : 0)) / 30) * 100;
+
+      const selectOption = (idx) => {
+        const newAnswers = [...answers];
+        newAnswers[current] = idx;
+        setAnswers(newAnswers);
+      };
+
+      const goNext = () => {
+        if (current === 29) {
+          // Calculate scores
+          let vata = 0, pitta = 0, kapha = 0;
+          answers.forEach((ans, qi) => {
+            if (ans === null) return;
+            const dosha = QUESTIONS[qi].doshas[ans];
+            if (dosha === 'vata') vata++;
+            else if (dosha === 'pitta') pitta++;
+            else kapha++;
+          });
+          const total = vata + pitta + kapha;
+          const percentages = {
+            vata: Math.round((vata / 30) * 100),
+            pitta: Math.round((pitta / 30) * 100),
+            kapha: Math.round((kapha / 30) * 100)
+          };
+          const prakriti = computePrakriti({ vata, pitta, kapha });
+          const sorted = [['vata', vata], ['pitta', pitta], ['kapha', kapha]].sort((a, b) => b[1] - a[1]);
+          const assessment = {
+            id: generateId(), takenAt: new Date().toISOString(),
+            scores: { vata, pitta, kapha }, percentages, prakriti,
+            dominant: sorted[0][0]
+          };
+          // Save to user
+          const users = getUsers();
+          const updated = users.map(u => {
+            if (u.id === currentUser.id) {
+              return { ...u, assessments: [...u.assessments, assessment] };
+            }
+            return u;
+          });
+          saveUsers(updated);
+          const updUser = updated.find(u => u.id === currentUser.id);
+          if (updUser) saveCurrentUser(updUser);
+          onResultSave && onResultSave(updUser);
+          addToast('Assessment complete! Your results are ready. 🌿', 'success');
+          setResult(assessment);
+        } else {
+          setCurrent(c => c + 1);
+          setKey(k => k + 1);
+        }
+      };
+
+      const goBack = () => { if (current > 0) { setCurrent(c => c - 1); setKey(k => k + 1); } };
+
+      return (
+        <div className="quiz-page">
+          <div className="quiz-header">
+            <div className="quiz-meta">
+              <span className="quiz-counter">Question {current + 1} of 30</span>
+              <span className="quiz-category-badge">{q.cat}</span>
+            </div>
+            <div className="quiz-progress-bar">
+              <div className="quiz-progress-fill" style={{ width: `${((current + 1) / 30) * 100}%` }}></div>
+            </div>
+          </div>
+          <div className="quiz-container">
+            <div className="question-card" key={key}>
+              <p className="question-text">{q.q}</p>
+              <div className="options-list">
+                {q.opts.map((opt, i) => {
+                  const dosha = q.doshas[i];
+                  const isSel = selected === i;
+                  return (
+                    <button
+                      key={i}
+                      className={`option-card${isSel ? ` selected-${dosha}` : ''}`}
+                      onClick={() => selectOption(i)}
+                    >
+                      <span className="option-letter">{String.fromCharCode(65 + i)}</span>
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="quiz-nav">
+                <button className="quiz-btn quiz-btn-back" onClick={goBack} disabled={current === 0}>← Back</button>
+                <button className="quiz-btn quiz-btn-continue" onClick={goNext} disabled={selected === null}>
+                  {current === 29 ? 'View My Results ✨' : 'Continue →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // ADMIN DASHBOARD
+    // ═══════════════════════════════════════════
+    const AdminPage = ({ currentUser, setPage, addToast, setCurrentUser }) => {
+      const [tab, setTab] = useState('dashboard');
+      const [users, setUsers] = useState([]);
+      const [search, setSearch] = useState('');
+      const [roleFilter, setRoleFilter] = useState('all');
+      const [prakritiFilter, setPrakritiFilter] = useState('all');
+      const [viewUser, setViewUser] = useState(null);
+      const [adminName, setAdminName] = useState(currentUser?.name || '');
+      const [adminPw, setAdminPw] = useState('');
+      const [settings, setSettingsState] = useState(getSettings());
+      const chartDistRef = useRef(null);
+      const chartBarRef = useRef(null);
+      const distChart = useRef(null);
+      const barChart = useRef(null);
+
+      useEffect(() => {
+        setUsers(getUsers());
+      }, []);
+
+      useEffect(() => {
+        if (tab === 'dashboard') {
+          setTimeout(() => { initCharts(); }, 100);
+        }
+        return () => {
+          if (distChart.current) distChart.current.destroy();
+          if (barChart.current) barChart.current.destroy();
+        };
+      }, [tab, users]);
+
+      if (!currentUser || currentUser.role !== 'admin') {
+        return (
+          <div className="protected-msg">
+            <div className="protected-icon">🚫</div>
+            <h2>Access Denied</h2>
+            <p>This page is only accessible to administrators.</p>
+            <button className="btn-action btn-action-primary" onClick={() => setPage('home')}>Back to Home</button>
+          </div>
+        );
+      }
+
+      const allAssessments = users.flatMap(u => u.assessments.map(a => ({ ...a, userName: u.name, userEmail: u.email })));
+      const totalUsers = users.filter(u => u.role === 'user').length;
+      const totalAssessments = allAssessments.length;
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const newUsersThisWeek = users.filter(u => new Date(u.createdAt) > oneWeekAgo).length;
+      const prakrityCounts = allAssessments.reduce((acc, a) => { acc[a.prakriti] = (acc[a.prakriti] || 0) + 1; return acc; }, {});
+      const mostCommon = Object.entries(prakrityCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
+
+      const initCharts = () => {
+        if (distChart.current) distChart.current.destroy();
+        if (barChart.current) barChart.current.destroy();
+
+        if (chartDistRef.current) {
+          const labels = Object.keys(prakrityCounts);
+          const values = Object.values(prakrityCounts);
+          distChart.current = new Chart(chartDistRef.current, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values, backgroundColor: ['rgba(123,157,186,0.8)', 'rgba(196,112,74,0.8)', 'rgba(92,140,106,0.8)', 'rgba(201,168,76,0.8)', 'rgba(150,100,180,0.8)', 'rgba(180,140,80,0.8)', 'rgba(100,160,120,0.8)'], borderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: true, cutout: '60%', plugins: { legend: { display: true, position: 'bottom', labels: { color: 'var(--text-mid)', font: { size: 11 } } } } }
+          });
+        }
+        if (chartBarRef.current) {
+          const days = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(); d.setDate(d.getDate() - 6 + i);
+            return d.toLocaleDateString('en-IN', { weekday: 'short' });
+          });
+          const counts = days.map((_, i) => {
+            const d = new Date(); d.setDate(d.getDate() - 6 + i);
+            return allAssessments.filter(a => {
+              const ad = new Date(a.takenAt);
+              return ad.toDateString() === d.toDateString();
+            }).length;
+          });
+          barChart.current = new Chart(chartBarRef.current, {
+            type: 'bar',
+            data: { labels: days, datasets: [{ label: 'Assessments', data: counts, backgroundColor: 'rgba(201,168,76,0.7)', borderColor: 'var(--gold)', borderWidth: 1.5, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, color: 'var(--text-muted)' }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { color: 'var(--text-muted)' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+          });
+        }
+      };
+
+      const filteredUsers = users.filter(u => {
+        const matchSearch = !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
+        const matchRole = roleFilter === 'all' || u.role === roleFilter;
+        const userPrakriti = u.assessments.slice(-1)[0]?.prakriti;
+        const matchPrakriti = prakritiFilter === 'all' || userPrakriti === prakritiFilter;
+        return matchSearch && matchRole && matchPrakriti;
+      });
+
+      const toggleAdmin = (userId) => {
+        const updated = users.map(u => {
+          if (u.id === userId) return { ...u, role: u.role === 'admin' ? 'user' : 'admin' };
+          return u;
+        });
+        saveUsers(updated); setUsers(updated);
+        addToast('User role updated.', 'success');
+      };
+
+      const deleteUser = (userId) => {
+        if (!confirm('Are you sure you want to delete this user? This cannot be undone.')) return;
+        const updated = users.filter(u => u.id !== userId);
+        saveUsers(updated); setUsers(updated);
+        addToast('User deleted.', 'success');
+      };
+
+      const saveAdminSettings = () => {
+        if (adminName.trim()) {
+          const updated = users.map(u => u.id === currentUser.id ? { ...u, name: adminName } : u);
+          saveUsers(updated);
+          const upd = { ...currentUser, name: adminName };
+          saveCurrentUser(upd); setCurrentUser(upd);
+        }
+        if (adminPw) {
+          const updated = users.map(u => u.id === currentUser.id ? { ...u, password: adminPw } : u);
+          saveUsers(updated);
+        }
+        saveSettings(settings);
+        addToast('Settings saved!', 'success');
+      };
+
+      const exportData = () => {
+        const data = { users: getUsers(), settings: getSettings(), exportedAt: new Date().toISOString() };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'prakritisense_data.json'; a.click();
+        URL.revokeObjectURL(url);
+        addToast('Data exported!', 'success');
+      };
+
+      return (
+        <div className="admin-layout page-enter">
+          <div className="admin-nav-inner">
+            {[['dashboard', '📊 Dashboard'], ['users', '👥 Users'], ['assessments', '📋 Assessments'], ['settings', '⚙️ Settings']].map(([id, label]) => (
+              <button key={id} className={`admin-tab-btn${tab === id ? ' active' : ''}`} onClick={() => setTab(id)}>{label}</button>
+            ))}
+          </div>
+
+          <div className="admin-content">
+            {/* DASHBOARD */}
+            {tab === 'dashboard' && (
+              <div>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', marginBottom: '1.5rem' }}>Dashboard Overview</h2>
+                <div className="stat-cards">
+                  {[
+                    { label: 'Total Users', value: totalUsers, sub: 'Registered accounts' },
+                    { label: 'Total Assessments', value: totalAssessments, sub: 'Completed quizzes' },
+                    { label: 'Most Common', value: mostCommon || '—', sub: 'Prakriti type' },
+                    { label: 'New This Week', value: newUsersThisWeek, sub: 'New signups (7 days)' },
+                  ].map(({ label, value, sub }) => (
+                    <div key={label} className="stat-card">
+                      <div className="stat-card-label">{label}</div>
+                      <div className="stat-card-value">{value}</div>
+                      <div className="stat-card-sub">{sub}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="admin-charts">
+                  <div className="admin-chart-card">
+                    <h3>Prakriti Distribution</h3>
+                    {totalAssessments === 0 ? <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No assessments yet.</p> : <canvas ref={chartDistRef}></canvas>}
+                  </div>
+                  <div className="admin-chart-card">
+                    <h3>Assessments — Last 7 Days</h3>
+                    <canvas ref={chartBarRef}></canvas>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* USERS */}
+            {tab === 'users' && (
+              <div>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', marginBottom: '1.5rem' }}>User Management</h2>
+                <div className="admin-filters">
+                  <input className="admin-search" placeholder="Search by name or email..." value={search} onChange={e => setSearch(e.target.value)} />
+                  <select className="admin-select" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
+                    <option value="all">All Roles</option>
+                    <option value="user">Users</option>
+                    <option value="admin">Admins</option>
+                  </select>
+                  <select className="admin-select" value={prakritiFilter} onChange={e => setPrakritiFilter(e.target.value)}>
+                    <option value="all">All Prakriti Types</option>a
+                    {['Vata', 'Pitta', 'Kapha', 'Vata-Pitta', 'Pitta-Kapha', 'Vata-Kapha', 'Tridoshic'].map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="admin-section-card">
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>
+                          {['#', 'Name', 'Email', 'Role', 'Joined', 'Last Login', 'Prakriti', 'Assessments', 'Actions'].map(h => <th key={h}>{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((u, i) => {
+                          const lastPrakriti = u.assessments.slice(-1)[0]?.prakriti;
+                          return (
+                            <tr key={u.id}>
+                              <td>{i + 1}</td>
+                              <td><strong>{u.name}</strong></td>
+                              <td style={{ color: 'var(--text-muted)' }}>{u.email}</td>
+                              <td><span className={`role-badge ${u.role}`}>{u.role}</span></td>
+                              <td>{fmtDate(u.createdAt)}</td>
+                              <td>{fmtDate(u.lastLogin)}</td>
+                              <td>{lastPrakriti ? <span className="prakriti-badge">{lastPrakriti}</span> : '—'}</td>
+                              <td><strong>{u.assessments.length}</strong></td>
+                              <td>
+                                <button className="btn-table-action btn-view" onClick={() => setViewUser(u)}>View</button>
+                                {u.id !== currentUser.id && (
+                                  <button className="btn-table-action btn-promote" onClick={() => toggleAdmin(u.id)}>{u.role === 'admin' ? 'Demote' : 'Promote'}</button>
+                                )}
+                                {u.id !== currentUser.id && (
+                                  <button className="btn-table-action btn-delete" onClick={() => deleteUser(u.id)}>Delete</button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {filteredUsers.length === 0 && (
+                          <tr><td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No users found.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ASSESSMENTS */}
+            {tab === 'assessments' && (
+              <div>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', marginBottom: '1.5rem' }}>All Assessments</h2>
+                <div className="admin-section-card">
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>{['User', 'Email', 'Date', 'Prakriti', 'Vata%', 'Pitta%', 'Kapha%'].map(h => <th key={h}>{h}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {allAssessments.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>No assessments recorded yet.</td></tr>}
+                        {allAssessments.map((a, i) => (
+                          <tr key={i}>
+                            <td><strong>{a.userName}</strong></td>
+                            <td style={{ color: 'var(--text-muted)' }}>{a.userEmail}</td>
+                            <td>{fmtDate(a.takenAt)}</td>
+                            <td><span className="prakriti-badge">{a.prakriti}</span></td>
+                            <td style={{ color: 'var(--vata)' }}>{a.percentages?.vata ?? a.scores?.vata}%</td>
+                            <td style={{ color: 'var(--pitta)' }}>{a.percentages?.pitta ?? a.scores?.pitta}%</td>
+                            <td style={{ color: 'var(--kapha)' }}>{a.percentages?.kapha ?? a.scores?.kapha}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SETTINGS */}
+            {tab === 'settings' && (
+              <div>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', marginBottom: '1.5rem' }}>Settings</h2>
+                <div className="settings-grid">
+                  <div className="admin-section-card">
+                    <h3>Admin Profile</h3>
+                    <div className="form-group">
+                      <label className="form-label">Display Name</label>
+                      <input className="form-input" value={adminName} onChange={e => setAdminName(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">New Password</label>
+                      <input className="form-input" type="password" placeholder="Leave blank to keep current" value={adminPw} onChange={e => setAdminPw(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="admin-section-card">
+                    <h3>App Settings</h3>
+                    <div className="settings-toggle-row">
+                      <div className="settings-label">
+                        <strong>Allow New Registrations</strong>
+                        Permit new users to sign up
+                      </div>
+                      <button className={`toggle-switch${settings.allowRegistration ? ' on' : ''}`} onClick={() => setSettingsState(s => ({ ...s, allowRegistration: !s.allowRegistration }))}>
+                        <div className="toggle-knob"></div>
+                      </button>
+                    </div>
+                    <div className="settings-toggle-row">
+                      <div className="settings-label">
+                        <strong>Show Quiz to All</strong>
+                        Allow non-logged users to see quiz
+                      </div>
+                      <button className={`toggle-switch${settings.showQuizToAll ? ' on' : ''}`} onClick={() => setSettingsState(s => ({ ...s, showQuizToAll: !s.showQuizToAll }))}>
+                        <div className="toggle-knob"></div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                  <button className="btn-action btn-action-primary" onClick={saveAdminSettings}>💾 Save Settings</button>
+                  <button className="btn-action btn-action-outline" onClick={exportData}>📤 Export All Data as JSON</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* USER DETAIL MODAL */}
+          {viewUser && (
+            <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setViewUser(null)}>
+              <div className="modal-box">
+                <div className="modal-header">
+                  <h2>User Profile</h2>
+                  <button className="modal-close" onClick={() => setViewUser(null)}>✕</button>
+                </div>
+                <div className="modal-body">
+                  <div className="user-profile-header">
+                    <div className="user-profile-avatar">{viewUser.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</div>
+                    <div className="user-profile-info">
+                      <h3>{viewUser.name}</h3>
+                      <p>{viewUser.email} · <span className={`role-badge ${viewUser.role}`}>{viewUser.role}</span></p>
+                      <p style={{ marginTop: '4px' }}>Joined {fmtDate(viewUser.createdAt)}</p>
+                    </div>
+                  </div>
+                  <h4 style={{ marginBottom: '1rem', color: 'var(--text-dark)' }}>Assessment History ({viewUser.assessments.length})</h4>
+                  {viewUser.assessments.length === 0 && <p style={{ color: 'var(--text-muted)' }}>No assessments taken yet.</p>}
+                  <div className="assessment-timeline">
+                    {viewUser.assessments.slice().reverse().map((a, i) => (
+                      <div key={i} className="assessment-entry">
+                        <div className="assessment-entry-header">
+                          <span className="prakriti-badge">{a.prakriti}</span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fmtDate(a.takenAt)}</span>
+                        </div>
+                        <div className="assessment-mini-bars">
+                          {[['Vata', a.percentages?.vata ?? a.scores?.vata, 'var(--vata)'], ['Pitta', a.percentages?.pitta ?? a.scores?.pitta, 'var(--pitta)'], ['Kapha', a.percentages?.kapha ?? a.scores?.kapha, 'var(--kapha)']].map(([d, v, c]) => (
+                            <span key={d} className="mini-bar-item" style={{ color: c, fontWeight: 600 }}>{d}: {v}%</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ═══════════════════════════════════════════
+    // MAIN APP
+    // ═══════════════════════════════════════════
+    const App = () => {
+      const [currentPage, setCurrentPage] = useState('home');
+      const [currentUser, setCurrentUser] = useState(null);
+      const [darkMode, setDarkMode] = useState(false);
+      const [lang, setLang] = useState('en');
+      const [toasts, setToasts] = useState([]);
+
+      useEffect(() => {
+        seedAdmin();
+        const user = getCurrentUser();
+        if (user) setCurrentUser(user);
+        const dm = localStorage.getItem('ps_dark') === 'true';
+        if (dm) { setDarkMode(true); document.body.classList.add('dark'); }
+        const lng = localStorage.getItem('ps_lang') || 'en';
+        setLang(lng);
+      }, []);
+
+      const toggleDark = () => {
+        const nd = !darkMode;
+        setDarkMode(nd);
+        document.body.classList.toggle('dark', nd);
+        localStorage.setItem('ps_dark', nd);
+      };
+
+      const toggleLang = () => {
+        const nl = lang === 'en' ? 'ml' : 'en';
+        setLang(nl);
+        localStorage.setItem('ps_lang', nl);
+      };
+
+      const addToast = (msg, type = 'success') => {
+        const id = generateId();
+        setToasts(t => [...t, { id, msg, type }]);
+        setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3000);
+      };
+
+      const handleLogout = () => {
+        clearCurrentUser();
+        setCurrentUser(null);
+        setCurrentPage('home');
+        addToast('Logged out successfully.', 'success');
+      };
+
+      const handleLogin = (user) => setCurrentUser(user);
+
+      const handleResultSave = (updUser) => {
+        if (updUser) { setCurrentUser(updUser); saveCurrentUser(updUser); }
+      };
+
+      const t = TRANSLATIONS[lang];
+
+      const setPage = (page) => {
+        window.scrollTo(0, 0);
+        setCurrentPage(page);
+      };
+
+      const navbarProps = { currentPage, setPage, currentUser, onLogout: handleLogout, darkMode, toggleDark, lang, toggleLang, t };
+
+      const renderPage = () => {
+        switch (currentPage) {
+          case 'home': return <HomePage setPage={setPage} t={t} />;
+          case 'login': return <LoginPage setPage={setPage} onLogin={handleLogin} addToast={addToast} t={t} />;
+          case 'signup': return <SignupPage setPage={setPage} onLogin={handleLogin} addToast={addToast} t={t} />;
+          case 'quiz': return <QuizPage currentUser={currentUser} setPage={setPage} addToast={addToast} onResultSave={handleResultSave} />;
+          case 'admin': return <AdminPage currentUser={currentUser} setPage={setPage} addToast={addToast} setCurrentUser={setCurrentUser} />;
+          default: return <HomePage setPage={setPage} t={t} />;
+        }
+      };
+
+      const showNavbar = !['login', 'signup'].includes(currentPage);
+
+      return (
+        <div>
+          {showNavbar && <Navbar {...navbarProps} />}
+          <main style={{ paddingTop: showNavbar ? '64px' : '0' }}>
+            {renderPage()}
+          </main>
+          <ToastContainer toasts={toasts} />
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+
+</html>
